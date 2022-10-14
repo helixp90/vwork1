@@ -1,9 +1,11 @@
 from doctest import master
 import tkinter as tk
+from tkinter import messagebox
 from turtle import bgcolor
 import sys
 import subprocess
-
+import random
+import string
 import mainmenu
 
 #master = tk.Tk()
@@ -28,8 +30,8 @@ class GUI:
         self.lnumberframe = tk.Frame(self.master, background = "Black")
         self.lnumberframe.pack(side = tk.LEFT)
 
-        self.lnumber = tk.Label(self.lnumberframe, text = "#", font = ("Times New Roman", 15), fg = "Black")
-        self.lnumber.pack(anchor = tk.CENTER)
+        self.lnumber = tk.Label(self.lnumberframe, text = "#" + self.makelobbycode(), font = ("Times New Roman", 15), fg = "Black")
+        self.lnumber.pack(fill = "both")
 
 
         self.ecdlabel = tk.Label(self.master, text = "Eye Closure Detection", font = ("Times New Roman", 15), fg = "Black")
@@ -87,6 +89,18 @@ class GUI:
 
         self.master.destroy()
         subprocess.call([sys.executable, "mainmenu.py"])
+
+        #mainmenu.master.deiconify()
+
+
+    def makelobbycode(self):
+
+        self.x = random.choices(string.ascii_letters + string.digits, k = 5)
+
+        for i in self.x:
+        
+            return i
+            
 
         
 

@@ -1,8 +1,9 @@
 from doctest import master
 import tkinter as tk
 from turtle import bgcolor
-
-from . import mainmenu
+import sys
+import subprocess
+import mainmenu
 
 #import mainmenu
 
@@ -21,14 +22,14 @@ class GUI:
         self.master.title("Joined Lobby")
         self.master.geometry("")
 
-        self.leave = tk.Button(self.master, text = "Leave", bg = "Red", fg = "White", command = exit)
+        self.leave = tk.Button(self.master, text = "Leave", bg = "Red", fg = "White", command = lambda: self.leavewindow())
         self.leave.pack(anchor = tk.NW, side = tk.TOP)
 
 
         self.lnameframe = tk.Frame(self.master, background = "Black")
         self.lnameframe.pack(side = tk.TOP)
 
-        self.lname = tk.Label(self.lnameframe, text = "Ma'am Jenith's Lobby", font = ("Times New Roman", 15), fg = "Black")
+        self.lname = tk.Label(self.lnameframe, text = mainmenu.getvalueoflist(), font = ("Times New Roman", 15), fg = "Black")
         self.lname.pack(fill = "both")
 
 
@@ -55,6 +56,13 @@ class GUI:
 
         self.notiflist = tk.Listbox(self.bigframe2)
         self.notiflist.pack(expand = 1)
+
+    def leavewindow(self):
+
+        self.master.destroy()
+        subprocess.call([sys.executable, "mainmenu.py"])
+
+        #mainmenu.master.deiconify()
 
         
 
