@@ -8,10 +8,10 @@ import subprocess
 
 class GUI:
 
-    def __init__(self):
+    if __name__ == "__main__":
 
-        if self.__name__ == "__main__":
-            
+        def __init__(self):
+
             self.master = tk.Tk()
 
             self.master.title("Sleep Detection Monitoring Software")
@@ -30,6 +30,8 @@ class GUI:
 
 
             self.masterframe = tk.Frame(self.master)
+
+            self.masterframe.pack(anchor = tk.CENTER)
 
 
             self.clobbybutton = tk.Button(self.masterframe, text = "Create Lobby", bg = "Black", fg = "White", command = lambda: self.packcreateframe())
@@ -100,45 +102,25 @@ class GUI:
 
     def joinlobby(self):
 
-        if (e3.index("end") == 0 or e2.index("end") == 0):
+        if (self.entergname.index("end") == 0 or self.enterlcode.index("end") == 0):
 
             tk.messagebox.showwarning("Fill the info!")
 
         else:
-            
-            
-            
-            #mn = self.master
-
+         
             self.master.withdraw()
             subprocess.call([sys.executable, "join.py"])
 
-            getvalueoflist()
+            #getvalueoflist()
 
-    def getvalueoflist():
+    def getvalueofclobbyname(self):
 
-        lol = e2.get()
-        #frame2 = tk.Frame(self.master)
-        #frame3 = tk.Frame(self.master)
-
-        #def GoBack():
+        return self.enterlname.get()
 
 
 
 
+g = GUI()
 
-        #e.grid(row = 0, column = 0, columnspan=3, pady = 10, padx = 10)
-        #e.pack()
-
-
-
-        #def callback(): 
-        #   print e.get() # This is the text you may want to use later
-
-        #b = tk.Button(self.master, text = "OK", width = 10)
-        #b.pack()
-
-        g = GUI()
-
-        tk.mainloop()
+tk.mainloop()
 

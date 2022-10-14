@@ -6,7 +6,9 @@ import sys
 import subprocess
 import random
 import string
-import mainmenu
+from mainmenu import getvalueofclobbyname
+import socket
+import threading
 
 #master = tk.Tk()
 
@@ -102,10 +104,46 @@ class GUI:
             return i
             
 
+class INITSERVER(GUI):
+
+    def __init__(self):
+
+        super().__init__()
+
+        # Choose a port that is free
+        self.PORT = 5000
         
+        # An IPv4 address is obtained
+        # for the server.
+        self.SERVER = socket.gethostbyname(socket.gethostname())
+        
+        # Address is stored as a tuple
+        self.ADDRESS = (self.SERVER, self.PORT)
+        
+        # the format in which encoding
+        # and decoding will occur
+        self.FORMAT = "utf-8"
+        
+        # Lists that will contains
+        # all the clients connected to
+        # the server and their names.
+        self.clients, self.names = [], []
+        
+        # Create a new socket for
+        # the server
+        self.server = socket.socket(socket.AF_INET,
+                            socket.SOCK_STREAM)
+        
+        # bind the address of the
+        # server to the socket
+        self.server.bind(self.ADDRESS)
+        
+        # function to start the connection    
 
 
 g = GUI()
+
+s = INITSERVER()
 
 tk.mainloop()
 
