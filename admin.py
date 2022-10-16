@@ -16,34 +16,34 @@ import threading
 #master.geometry("")
 
 
-class GUI:
+class GUI2:
 
     def __init__(self):
 
-        self.master = tk.Tk()
+        self.master2 = tk.Tk()
 
-        self.master.title("Admin Lobby")
-        self.master.geometry("")
+        self.master2.title("Admin Lobby")
+        self.master2.geometry("")
 
-        self.leave = tk.Button(self.master, text = "Leave", bg = "Red", fg = "White", command = lambda: self.leavewindow())
+        self.leave = tk.Button(self.master2, text = "Leave", bg = "Red", fg = "White", command = lambda: self.leavewindow())
         self.leave.pack(anchor = tk.NW, side = tk.TOP)
 
 
-        self.lnumberframe = tk.Frame(self.master, background = "Black")
+        self.lnumberframe = tk.Frame(self.master2, background = "Black")
         self.lnumberframe.pack(side = tk.LEFT)
 
         self.lnumber = tk.Label(self.lnumberframe, text = "#" + self.makelobbycode(), font = ("Times New Roman", 15), fg = "Black")
         self.lnumber.pack(fill = "both")
 
 
-        self.ecdlabel = tk.Label(self.master, text = "Eye Closure Detection", font = ("Times New Roman", 15), fg = "Black")
+        self.ecdlabel = tk.Label(self.master2, text = "Eye Closure Detection", font = ("Times New Roman", 15), fg = "Black")
         self.ecdlabel.pack(anchor = tk.CENTER)
 
-        self.ecdpower = tk.Button(self.master, text = "On/Off", bg = "Black", fg = "White")
+        self.ecdpower = tk.Button(self.master2, text = "On/Off", bg = "Black", fg = "White")
         self.ecdpower.pack()
 
 
-        self.bigframe = tk.Frame(self.master, background = "Black")
+        self.bigframe = tk.Frame(self.master2, background = "Black")
         self.bigframe.pack(anchor = tk.CENTER)
 
         
@@ -74,7 +74,7 @@ class GUI:
         self.clientlist.pack(expand = 1)
 
 
-        self.bigframe2 = tk.Frame(self.master, background = "Black")
+        self.bigframe2 = tk.Frame(self.master2, background = "Black")
         self.bigframe2.pack(side = tk.RIGHT)
 
         self.notiframe = tk.Frame(self.bigframe2, background = "Blue")
@@ -89,7 +89,7 @@ class GUI:
 
     def leavewindow(self):
 
-        self.master.destroy()
+        self.master2.destroy()
         subprocess.call([sys.executable, "mainmenu.py"])
 
         #mainmenu.master.deiconify()
@@ -104,7 +104,7 @@ class GUI:
             return i
             
 
-class INITSERVER(GUI):
+class INITSERVER(GUI2):
 
     def __init__(self):
 
@@ -162,7 +162,7 @@ class INITSERVER(GUI):
             # append the name and client
             # to the respective list
 
-            self.clientlist.insert("end", self.name)
+            self.clientlist.insert("end", self.name) #append client names to listbox
 
             #names.append(name)
             #clients.append(conn)
@@ -186,17 +186,17 @@ class INITSERVER(GUI):
         # incoming messages
     
     
-    def handle(conn, addr):
+    def handle(self, conn, addr):
     
         print(f"new connection {addr}")
         connected = True
     
         while connected:
             # receive message
-            message = conn.recv(1024)
+            self.message = conn.recv(1024)
     
             # broadcast message
-            broadcastMessage(message)
+            self.broadcastMessage(self.message)
     
         # close the connection
         conn.close()
@@ -205,14 +205,14 @@ class INITSERVER(GUI):
     # messages to the each clients
     
     
-    def broadcastMessage(message):
+    def broadcastMessage(self, message):
         
-        for client in clients:
+        for client in self.clients:
             
             client.send(message)   
 
 
-g = GUI()
+g = GUI2()
 
 s = INITSERVER()
 
