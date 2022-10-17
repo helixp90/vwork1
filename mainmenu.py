@@ -110,7 +110,7 @@ class GUI:
             else:
             
                 self.master.withdraw()
-                subprocess.call([sys.executable, "join.py"])
+                #subprocess.call([sys.executable, "join.py"])
 
                 #getvalueoflist()
 
@@ -136,7 +136,7 @@ class GUI2(GUI):
         self.lnumberframe = tk.Frame(self.master2, background = "Black")
         self.lnumberframe.pack(side = tk.LEFT)
 
-        self.lnumber = tk.Label(self.lnumberframe, text = "#" + self.makelobbycode(), font = ("Times New Roman", 15), fg = "Black")
+        self.lnumber = tk.Label(self.lnumberframe, font = ("Times New Roman", 15), fg = "Black")
         self.lnumber.pack(fill = "both")
 
 
@@ -191,6 +191,8 @@ class GUI2(GUI):
         self.notiflist = tk.Listbox(self.bigframe2)
         self.notiflist.pack(expand = 1)
 
+        self.makelobbycode()
+
     def leavewindow(self):
 
         self.master2.destroy()
@@ -201,11 +203,20 @@ class GUI2(GUI):
 
     def makelobbycode(self):
 
-        self.x = random.choices(string.ascii_letters + string.digits, k = 5)
+        self.lobbycode = random.choices(string.ascii_letters + string.digits, k = 5)
 
-        for i in self.x:
-        
-            return i
+        self.lobbycode = [str(x) for x in self.lobbycode]
+
+        self.msg = ''.join(self.lobbycode)
+
+        tk.messagebox.showinfo("New Lobby Code!", "Your lobby code is: " + self.msg)
+
+        self.lnumber.config(text = self.msg)
+
+
+
+
+
 
 
 if __name__ == "__main__":
