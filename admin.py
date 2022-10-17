@@ -138,7 +138,78 @@ class INITSERVER(GUI):
         # server to the socket
         self.server.bind(self.ADDRESS)
         
-        # function to start the connection    
+        # function to start the connection 
+
+    def startChat(self):
+ 
+        print("server is working on " + self.SERVER)
+    
+        # listening for connections
+        self.server.listen()
+    
+        while True:
+    
+            # accept connections and returns
+            # a new connection to the client
+            #  and  the address bound to it
+            self.conn, self.addr = self.server.accept()
+            #self.conn.send("NAME".encode(FORMAT))
+    
+            # 1024 represents the max amount
+            # of data that can be received (bytes)
+            self.name = self.conn.recv(1024).decode(self.FORMAT)
+    
+            # append the name and client
+            # to the respective list
+
+            self.clientlist.insert("end", self.name)
+
+            #names.append(name)
+            #clients.append(conn)
+    
+            print(f"Name is :{self.name}")
+    
+            # broadcast message
+            #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
+    
+            self.conn.send('Connection successful!'.encode(self.FORMAT))
+    
+            # Start the handling thread
+            self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
+            self.thread.start()
+    
+            # no. of clients connected
+            # to the server
+            print(f"active connections {threading.activeCount()-1}")
+    
+        # method to handle the
+        # incoming messages
+    
+    
+    def handle(conn, addr):
+    
+        print(f"new connection {addr}")
+        connected = True
+    
+        while connected:
+            # receive message
+            message = conn.recv(1024)
+    
+            # broadcast message
+            broadcastMessage(message)
+    
+        # close the connection
+        conn.close()
+    
+    # method for broadcasting
+    # messages to the each clients
+    
+    
+    def broadcastMessage(message):
+        
+        for client in clients:
+            
+            client.send(message)   
 
 
 g = GUI()
