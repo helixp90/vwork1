@@ -7,7 +7,7 @@ import numpy as np
 import argparse
 import imutils
 import time
-import dlib
+from cmake import dlib
 import cv2
 
 

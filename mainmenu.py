@@ -5,8 +5,16 @@ import sys
 import subprocess
 import random
 import string
+import socket
+import threading
+from tkinter import messagebox
+from tkinter import ttk
+from threading import Thread
 
-class GUI:
+global msg
+
+
+class GUI:  #mainmenu window
 
     #if __name__ == "__main__":
 
@@ -89,23 +97,24 @@ class GUI:
             self.back["state"] = "disabled" 
 
 
-        def makelobby(self):
+        def makelobby(self): #hides main menu window and initializes host GUI
 
             if (self.enterlname.index("end") == 0):
 
-                tk.messagebox.showwarning("Lobby should have a name!")
+                messagebox.showwarning("Invalid input!", "Lobby should have a name!")
 
             else:
 
                 self.master.withdraw()
                 #subprocess.call([sys.executable, "admin.py"])
                 self.h = GUI2()
+                
 
         def joinlobby(self):
 
             if (self.entergname.index("end") == 0 or self.enterlcode.index("end") == 0):
 
-                tk.messagebox.showwarning("Fill the info!")
+                messagebox.showwarning("Fill the info!")
 
             else:
             
@@ -119,6 +128,7 @@ class GUI:
         def getvalueofclobbyname(self):
 
             return self.enterlname.get()
+
 
 class GUI2(GUI):
 
@@ -193,9 +203,13 @@ class GUI2(GUI):
 
         self.makelobbycode()
 
+        self.s = INITSERVER()
+        self.s.startChat()
+
     def leavewindow(self):
 
         self.master2.destroy()
+        self.s.server.close()
         #subprocess.call([sys.executable, "mainmenu.py"])
         g.master.deiconify()
         #mainmenu.master.deiconify()
@@ -207,14 +221,119 @@ class GUI2(GUI):
 
         self.lobbycode = [str(x) for x in self.lobbycode]
 
-        self.msg = ''.join(self.lobbycode)
+        msg = ''.join(self.lobbycode)
 
-        tk.messagebox.showinfo("New Lobby Code!", "Your lobby code is: " + self.msg)
+        messagebox.showinfo("New Lobby Code!", "Your lobby code is: " + msg)
 
-        self.lnumber.config(text = self.msg)
+        self.lnumber.config(text = msg)
 
 
+class INITSERVER(GUI2, Thread):
 
+    def __init__(self):
+
+        #super().__init__()
+
+        # Choose a port that is free
+        self.PORT = 5000
+        
+        # An IPv4 address is obtained
+        # for the server.
+        self.SERVER = socket.gethostbyname(socket.gethostname())
+        
+        # Address is stored as a tuple
+        self.ADDRESS = (self.SERVER, self.PORT)
+        
+        # the format in which encoding
+        # and decoding will occur
+        self.FORMAT = "utf-8"
+        
+        # Lists that will contains
+        # all the clients connected to
+        # the server and their names.
+        self.clients, self.names = [], []
+        
+        # Create a new socket for
+        # the server
+        self.server = socket.socket(socket.AF_INET,
+                            socket.SOCK_STREAM)
+        
+        # bind the address of the
+        # server to the socket
+        self.server.bind(self.ADDRESS)
+        
+        # function to start the connection 
+
+    def startChat(self):
+ 
+        print("server is working on " + self.SERVER)
+    
+        # listening for connections
+        self.server.listen()
+
+        while True:
+    
+            # accept connections and returns
+            # a new connection to the client
+            #  and  the address bound to it
+            self.conn, self.addr = self.server.accept()
+            #self.conn.send("NAME".encode(FORMAT))
+
+            # 1024 represents the max amount
+            # of data that can be received (bytes)
+            self.name = self.conn.recv(1024).decode(self.FORMAT)
+
+            # append the name and client
+            # to the respective list
+
+            self.clientlist.insert("end", self.name) #append client names to listbox
+
+            #names.append(name)
+            #clients.append(conn)
+
+            print(f"Name is :{self.name}")
+
+            # broadcast message
+            #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
+
+            self.conn.send('Connection successful!'.encode(self.FORMAT))
+
+            # Start the handling thread
+            #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
+            #self.thread.start()
+
+            # no. of clients connected
+            # to the server
+            print(f"active connections {threading.activeCount()-1}")
+
+    # method to handle the
+    # incoming messages
+    
+    
+    def handle(self, conn, addr):
+    
+        print(f"new connection {addr}")
+        connected = True
+    
+        while connected:
+            # receive message
+            self.message = conn.recv(1024)
+    
+            # broadcast message
+            self.broadcastMessage(self.message)
+    
+        # close the connection
+        conn.close()
+    
+    # method for broadcasting
+    # messages to the each clients
+    
+    
+    def broadcastMessage(self, message):
+        
+        for client in self.clients:
+            
+            client.send(message)   
 
 
 

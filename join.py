@@ -60,7 +60,7 @@ class GUI3:
     def leavewindow(self):
 
         self.master3.destroy()
-        subprocess.call([sys.executable, "mainmenu.py"])
+        #subprocess.call([sys.executable, "mainmenu.py"])
 
         #mainmenu.master.deiconify()
 
