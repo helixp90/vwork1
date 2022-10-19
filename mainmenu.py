@@ -10,6 +10,7 @@ import threading
 from tkinter import messagebox
 from tkinter import ttk
 from threading import Thread
+from threading import Event
 
 global msg
 
@@ -203,13 +204,27 @@ class GUI2(GUI):
 
         self.makelobbycode()
 
+        #self.event = threading.Event()
+
         self.s = INITSERVER()
-        self.s.startChat()
+        
+        self.thread = Thread(target = self.s.startChat)
+
+        
+
+        self.thread.start()
+        #self.thread.join()
+        
+        
 
     def leavewindow(self):
+        
+        event.set()
+
+        self.s.server.close()
 
         self.master2.destroy()
-        self.s.server.close()
+        
         #subprocess.call([sys.executable, "mainmenu.py"])
         g.master.deiconify()
         #mainmenu.master.deiconify()
@@ -228,11 +243,15 @@ class GUI2(GUI):
         self.lnumber.config(text = msg)
 
 
-class INITSERVER(GUI2, Thread):
+class INITSERVER(GUI2):
 
     def __init__(self):
 
+        #threading.Thread.__init__(self)
+
         #super().__init__()
+
+        #self.event = event
 
         # Choose a port that is free
         self.PORT = 5000
@@ -265,46 +284,48 @@ class INITSERVER(GUI2, Thread):
         # function to start the connection 
 
     def startChat(self):
- 
-        print("server is working on " + self.SERVER)
-    
-        # listening for connections
-        self.server.listen()
+        
+        while not event.is_set():
 
-        while True:
-    
-            # accept connections and returns
-            # a new connection to the client
-            #  and  the address bound to it
-            self.conn, self.addr = self.server.accept()
-            #self.conn.send("NAME".encode(FORMAT))
+            print("server is working on " + self.SERVER)
+        
+            # listening for connections
+            self.server.listen()
 
-            # 1024 represents the max amount
-            # of data that can be received (bytes)
-            self.name = self.conn.recv(1024).decode(self.FORMAT)
+            while True:
+        
+                # accept connections and returns
+                # a new connection to the client
+                #  and  the address bound to it
+                self.conn, self.addr = self.server.accept()
+                #self.conn.send("NAME".encode(FORMAT))
 
-            # append the name and client
-            # to the respective list
+                # 1024 represents the max amount
+                # of data that can be received (bytes)
+                self.name = self.conn.recv(1024).decode(self.FORMAT)
 
-            self.clientlist.insert("end", self.name) #append client names to listbox
+                # append the name and client
+                # to the respective list
 
-            #names.append(name)
-            #clients.append(conn)
+                self.clientlist.insert("end", self.name) #append client names to listbox
 
-            print(f"Name is :{self.name}")
+                #names.append(name)
+                #clients.append(conn)
 
-            # broadcast message
-            #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
+                print(f"Name is :{self.name}")
 
-            self.conn.send('Connection successful!'.encode(self.FORMAT))
+                # broadcast message
+                #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
 
-            # Start the handling thread
-            #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
-            #self.thread.start()
+                self.conn.send('Connection successful!'.encode(self.FORMAT))
 
-            # no. of clients connected
-            # to the server
-            print(f"active connections {threading.activeCount()-1}")
+                # Start the handling thread
+                #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
+                #self.thread.start()
+
+                # no. of clients connected
+                # to the server
+                print(f"active connections {threading.activeCount()-1}")
 
     # method to handle the
     # incoming messages
@@ -339,6 +360,8 @@ class INITSERVER(GUI2, Thread):
 
 
 if __name__ == "__main__":
+
+    event = threading.Event()
 
     g = GUI()
     tk.mainloop()
