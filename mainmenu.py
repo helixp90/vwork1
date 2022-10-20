@@ -1,4 +1,5 @@
 
+from multiprocessing.dummy import Process, active_children
 import tkinter as tk
 from turtle import bgcolor
 import sys
@@ -11,6 +12,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from threading import Thread
 from threading import Event
+from multiprocessing import Process
 
 global msg
 
@@ -208,18 +210,22 @@ class GUI2(GUI):
 
         self.s = INITSERVER()
         
-        self.thread = Thread(target = self.s.startChat)
+        self.process = Process(target = self.s.startChat)
 
-        
-
-        self.thread.start()
+        self.process.start()
         #self.thread.join()
         
         
 
     def leavewindow(self):
+
+        self.process.terminate()
+
+        self.process.join()
         
-        event.set()
+        self.process.close()
+
+        print("Process closed")
 
         self.s.server.close()
 
@@ -284,9 +290,7 @@ class INITSERVER(GUI2):
         # function to start the connection 
 
     def startChat(self):
-        
-        while not event.is_set():
-
+       
             print("server is working on " + self.SERVER)
         
             # listening for connections
@@ -361,7 +365,7 @@ class INITSERVER(GUI2):
 
 if __name__ == "__main__":
 
-    event = threading.Event()
+    #event = threading.Event()
 
     g = GUI()
     tk.mainloop()
