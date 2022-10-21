@@ -313,7 +313,7 @@ class INITSERVER(GUI2):
         # function to start the connection 
 
     def startChat(self):
-
+       
         print("server is working on " + self.SERVER)
     
         # listening for connections
@@ -321,8 +321,7 @@ class INITSERVER(GUI2):
 
         while True:
             
-            #clientlist = self.clientlist
-
+    
             # accept connections and returns
             # a new connection to the client
             #  and  the address bound to it
