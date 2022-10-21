@@ -108,7 +108,7 @@ def broadcastMessage(message):
 startChat()
 
 
-def startChat():
+def startChat(self):
     
         print("server is working on " + SERVER)
     
@@ -136,7 +136,7 @@ def startChat():
 
             for i in name:
 
-                GUI.clientlist.insert("end", i)
+                self.clientlist.insert("end", i)
     
             # broadcast message
             #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))

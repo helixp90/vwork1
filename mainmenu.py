@@ -14,7 +14,7 @@ from threading import Thread
 from threading import Event
 from multiprocessing import Process
 
-global msg
+lobbycode = ''
 
 
 class GUI:  #mainmenu window
@@ -69,6 +69,8 @@ class GUI:  #mainmenu window
             self.createframe.pack(anchor = tk.CENTER)
             self.back["state"] = "active"
 
+            self.current_frame = self.createframe
+
 
         def packjoinframe(self):
 
@@ -91,10 +93,14 @@ class GUI:  #mainmenu window
             self.joinframe.pack(anchor = tk.CENTER)
             self.back["state"] = "active"
 
+            self.current_frame = self.joinframe
+
 
         def goback(self):
 
-            self.createframe.pack_forget() if self.createframe.winfo_ismapped() else self.joinframe.pack_forget()
+            #self.createframe.pack_forget() if self.createframe.winfo_ismapped() else self.joinframe.pack_forget()
+
+            self.current_frame.pack_forget()
 
             self.masterframe.pack(anchor = tk.CENTER)
             self.back["state"] = "disabled" 
@@ -102,11 +108,15 @@ class GUI:  #mainmenu window
 
         def makelobby(self): #hides main menu window and initializes host GUI
 
+            global clobbyname
+
             if (self.enterlname.index("end") == 0):
 
                 messagebox.showwarning("Invalid input!", "Lobby should have a name!")
 
             else:
+
+                clobbyname = self.enterlname.get()
 
                 self.master.withdraw()
                 #subprocess.call([sys.executable, "admin.py"])
@@ -117,14 +127,25 @@ class GUI:  #mainmenu window
 
             if (self.entergname.index("end") == 0 or self.enterlcode.index("end") == 0):
 
-                messagebox.showwarning("Fill the info!")
+                messagebox.showwarning("Invalid input!", "Name and/or code should have input!")
 
             else:
-            
-                self.master.withdraw()
-                #subprocess.call([sys.executable, "join.py"])
+                
+                try:
+                    
+                    #if self.enterlcode.get() == lobbycode:
 
-                #getvalueoflist()
+                        self.master.withdraw()
+                        #subprocess.call([sys.executable, "join.py"])
+                        self.j = GUI3()
+
+                        #getvalueoflist()
+
+                except Exception as e:
+
+                    messagebox.showerror("Server down!", "The server you're trying to connect to may be inactive.")
+
+                    print (e)
 
     #else:
 
@@ -238,15 +259,17 @@ class GUI2(GUI):
 
     def makelobbycode(self):
 
-        self.lobbycode = random.choices(string.ascii_letters + string.digits, k = 5)
+        global lobbycode
 
-        self.lobbycode = [str(x) for x in self.lobbycode]
+        lobbycode = random.choices(string.ascii_letters + string.digits, k = 5)
 
-        msg = ''.join(self.lobbycode)
+        lobbycode = [str(x) for x in lobbycode]
 
-        messagebox.showinfo("New Lobby Code!", "Your lobby code is: " + msg)
+        self.msg = ''.join(lobbycode)
 
-        self.lnumber.config(text = msg)
+        messagebox.showinfo("New Lobby Code!", "Your lobby code is: " + self.msg)
+
+        self.lnumber.config(text = self.msg)
 
 
 class INITSERVER(GUI2):
@@ -258,7 +281,7 @@ class INITSERVER(GUI2):
         #super().__init__()
 
         #self.event = event
-
+        
         # Choose a port that is free
         self.PORT = 5000
         
@@ -290,46 +313,50 @@ class INITSERVER(GUI2):
         # function to start the connection 
 
     def startChat(self):
-       
-            print("server is working on " + self.SERVER)
-        
-            # listening for connections
-            self.server.listen()
 
-            while True:
-        
-                # accept connections and returns
-                # a new connection to the client
-                #  and  the address bound to it
-                self.conn, self.addr = self.server.accept()
-                #self.conn.send("NAME".encode(FORMAT))
+        print("server is working on " + self.SERVER)
+    
+        # listening for connections
+        self.server.listen(30)
 
-                # 1024 represents the max amount
-                # of data that can be received (bytes)
-                self.name = self.conn.recv(1024).decode(self.FORMAT)
+        while True:
+            
+            #clientlist = self.clientlist
 
-                # append the name and client
-                # to the respective list
+            # accept connections and returns
+            # a new connection to the client
+            #  and  the address bound to it
+            self.conn, self.addr = self.server.accept()
+            #self.conn.send("NAME".encode(FORMAT))
 
-                self.clientlist.insert("end", self.name) #append client names to listbox
+            # 1024 represents the max amount
+            # of data that can be received (bytes)
+            self.name = self.conn.recv(1024).decode(self.FORMAT)
 
-                #names.append(name)
-                #clients.append(conn)
+            # append the name and client
+            # to the respective list
 
-                print(f"Name is :{self.name}")
+            #names.append(name)
+            #clients.append(conn)
 
-                # broadcast message
-                #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
+            self.clientlist.insert("end", self.name) #append client names to listbox
 
-                self.conn.send('Connection successful!'.encode(self.FORMAT))
+            
 
-                # Start the handling thread
-                #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
-                #self.thread.start()
+            print(f"Name is :{self.name}")
 
-                # no. of clients connected
-                # to the server
-                print(f"active connections {threading.activeCount()-1}")
+            # broadcast message
+            #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
+
+            self.conn.send('Connection successful!'.encode(self.FORMAT))
+
+            # Start the handling thread
+            #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
+            #self.thread.start()
+
+            # no. of clients connected
+            # to the server
+            print(f"active connections {threading.activeCount()-1}")
 
     # method to handle the
     # incoming messages
@@ -359,6 +386,83 @@ class INITSERVER(GUI2):
         for client in self.clients:
             
             client.send(message)   
+
+
+class GUI3(GUI):
+
+    def __init__(self):
+
+        self.master3 = tk.Toplevel()
+
+        self.master3.title("Joined Lobby")
+        self.master3.geometry("")
+
+        self.leave = tk.Button(self.master3, text = "Leave", bg = "Red", fg = "White", command = lambda: self.leavewindow())
+        self.leave.pack(anchor = tk.NW, side = tk.TOP)
+
+
+        self.lnameframe = tk.Frame(self.master3, background = "Black")
+        self.lnameframe.pack(side = tk.TOP)
+
+        self.lname = tk.Label(self.lnameframe, text = "+", font = ("Times New Roman", 15), fg = "Black")
+        self.lname.pack(fill = "both")
+
+
+        self.ecdlabel = tk.Label(self.master3, text = "Sleeping Detection Status", font = ("Times New Roman", 15), fg = "Black")
+        self.ecdlabel.pack(anchor = tk.CENTER)
+
+
+        self.bigframe = tk.Frame(self.master3, background = "Black")
+        self.bigframe.pack(anchor = tk.CENTER)
+
+        self.lname = tk.Label(self.bigframe, text = "Watching you", font = ("Times New Roman", 15), fg = "Blue")
+        self.lname.pack(fill = "both")
+
+
+        self.bigframe2 = tk.Frame(self.master3, background = "Black")
+        self.bigframe2.pack(side = tk.RIGHT)
+
+        self.notiframe = tk.Frame(self.bigframe2, background = "Blue")
+        self.notiframe.pack(side = tk.TOP)
+
+        self.lnotif = tk.Label(self.notiframe, text = "Sleeping Notification", font = ("Times New Roman", 15), fg = "Blue")
+        self.lnotif.pack(fill = "both")
+
+
+        self.notiflist = tk.Listbox(self.bigframe2)
+        self.notiflist.pack(expand = 1)
+
+        self.i = INITCLIENT()
+
+    def leavewindow(self):
+
+        self.i.client.close()
+
+        self.master3.destroy()
+
+        g.master.deiconify()
+        #subprocess.call([sys.executable, "mainmenu.py"])
+
+        #mainmenu.master.deiconify()
+
+class INITCLIENT(GUI3):
+
+    def __init__(self):
+
+        self.PORT = 5000
+        self.SERVER = "192.168.0.19"
+        self.ADDRESS = (self.SERVER, self.PORT)
+        self.FORMAT = "utf-8"
+
+        self.client = socket.socket(socket.AF_INET,
+                       socket.SOCK_STREAM)
+
+        self.client.connect(self.ADDRESS)
+
+        self.name = g.entergname.get()
+
+        self.client.send(self.name.encode(self.FORMAT))
+
 
 
 
