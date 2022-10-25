@@ -1,5 +1,4 @@
-
-from multiprocessing.dummy import Process, active_children
+import multiprocessing
 import tkinter as tk
 from turtle import bgcolor
 import sys
@@ -14,12 +13,10 @@ from threading import Thread
 from threading import Event
 from multiprocessing import Process
 
-lobbycode = ''
+#lobbycode = ''
 
 
-class GUI:  #mainmenu window
-
-    #if __name__ == "__main__":
+class GUI:  #initializes root/mainmenu window
 
         def __init__(self):
 
@@ -52,7 +49,7 @@ class GUI:  #mainmenu window
             self.jlobbybutton.grid(row = 0, column = 1)
 
 
-        def packcreateframe(self):
+        def packcreateframe(self): 
 
             self.createframe = tk.Frame(self.master)
 
@@ -98,15 +95,13 @@ class GUI:  #mainmenu window
 
         def goback(self):
 
-            #self.createframe.pack_forget() if self.createframe.winfo_ismapped() else self.joinframe.pack_forget()
-
             self.current_frame.pack_forget()
 
             self.masterframe.pack(anchor = tk.CENTER)
             self.back["state"] = "disabled" 
 
 
-        def makelobby(self): #hides main menu window and initializes host GUI
+        def makelobby(self): #hides main menu window and initializes admin/host GUI
 
             global clobbyname
 
@@ -119,11 +114,12 @@ class GUI:  #mainmenu window
                 clobbyname = self.enterlname.get()
 
                 self.master.withdraw()
-                #subprocess.call([sys.executable, "admin.py"])
+                
                 self.h = GUI2()
                 
 
-        def joinlobby(self):
+        def joinlobby(self): #hides main menu window and initializes client GUI
+
 
             if (self.entergname.index("end") == 0 or self.enterlcode.index("end") == 0):
 
@@ -131,7 +127,7 @@ class GUI:  #mainmenu window
 
             else:
                 
-                try:
+                try: #check if lobby code matches server's; incomplete atm
                     
                     #if self.enterlcode.get() == lobbycode:
 
@@ -154,9 +150,40 @@ class GUI:  #mainmenu window
             return self.enterlname.get()
 
 
-class GUI2(GUI):
+class GUI2(GUI): #admin/host UI
 
     def __init__(self):
+
+        self.checksignal(0)
+
+        #print (self.z)
+
+        self.PORT = 5000
+        
+        # An IPv4 address is obtained
+        # for the server.
+        self.SERVER = socket.gethostbyname(socket.gethostname())
+        
+        # Address is stored as a tuple
+        self.ADDRESS = (self.SERVER, self.PORT)
+        
+        # the format in which encoding
+        # and decoding will occur
+        self.FORMAT = "utf-8"
+        
+        # Lists that will contains
+        # all the clients connected to
+        # the server and their names.
+        self.clients, self.names = [], []
+        
+        # Create a new socket for
+        # the server
+        self.server = socket.socket(socket.AF_INET,
+                            socket.SOCK_STREAM)
+        
+        # bind the address of the
+        # server to the socket
+        self.server.bind(self.ADDRESS)
 
         self.master2 = tk.Toplevel()
 
@@ -229,26 +256,93 @@ class GUI2(GUI):
 
         #self.event = threading.Event()
 
-        self.s = INITSERVER()
-        
-        self.process = Process(target = self.s.startChat)
+        print("Before INITSERVER")
 
-        self.process.start()
-        #self.thread.join()
+        #self.s = INITSERVER()
+
+        print ("After INITSERVER")
         
+        #self.process = Process(target = self.s.startChat)
+
+        self.thread = Thread(target = self.startChat)
+
+        print ("After Thread INITIALIZATION")
+
+        self.thread.start()
+
+        print ("After Thread start")
+
+        #self.process.start()
+
+        #self.appendtolist()
+        #self.thread.join()
+
+    def startChat(self):
+
+        print("server is working on " + self.SERVER)
+    
+        # listening for connections
+        self.server.listen(30)
+
+        while True:
+
+            #if (self.checksignal == 0):
+            
+                # accept connections and returns
+                # a new connection to the client
+                #  and  the address bound to it
+                self.conn, self.addr = self.server.accept()
+                #self.conn.send("NAME".encode(FORMAT))
+
+                # 1024 represents the max amount
+                # of data that can be received (bytes)
+                self.name = self.conn.recv(1024).decode(self.FORMAT)
+
+                # append the name and client
+                # to the respective list
+
+                #names.append(name)
+                #clients.append(conn)
+
+                self.clientlist.insert("end", self.name) #append client names to listbox
+
+                print(f"Name is {self.name}")
+
+                # broadcast message
+                #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
+
+                #self.conn.send('Connection successful!'.encode(self.FORMAT))
+
+                # Start the handling thread
+                #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
+                #self.thread.start()
+
+                # no. of clients connected
+                # to the server
+                #print(f"active connections {threading.activeCount()-1}")
+
+            #else:
+
+                #return  
+
+    def checksignal(self, x):
+
+        return x    
         
 
     def leavewindow(self):
 
-        self.process.terminate()
+        self.checksignal(1)
 
-        self.process.join()
+        #print (self.z)
+
+        self.thread.join()
         
-        self.process.close()
+        #self.process.close()
 
-        print("Process closed")
+        print("Thread closed")
 
-        self.s.server.close()
+        self.server.close()
 
         self.master2.destroy()
         
@@ -271,8 +365,14 @@ class GUI2(GUI):
 
         self.lnumber.config(text = self.msg)
 
+    #def appendtolist(self):
 
-class INITSERVER(GUI2):
+        #for i in q.get():
+
+            #self.clientlist.insert("end", i)
+
+
+class INITSERVER(GUI2): #initializes and runs the server
 
     def __init__(self):
 
@@ -321,7 +421,6 @@ class INITSERVER(GUI2):
 
         while True:
             
-    
             # accept connections and returns
             # a new connection to the client
             #  and  the address bound to it
@@ -340,9 +439,7 @@ class INITSERVER(GUI2):
 
             self.clientlist.insert("end", self.name) #append client names to listbox
 
-            
-
-            print(f"Name is :{self.name}")
+            print(f"Name is {self.name}")
 
             # broadcast message
             #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
@@ -355,13 +452,17 @@ class INITSERVER(GUI2):
 
             # no. of clients connected
             # to the server
-            print(f"active connections {threading.activeCount()-1}")
+            #print(f"active connections {threading.activeCount()-1}")
+
+    print ("After Thread start")
+
+        
 
     # method to handle the
     # incoming messages
     
     
-    def handle(self, conn, addr):
+    def handle(self, conn, addr): #unused code
     
         print(f"new connection {addr}")
         connected = True
@@ -380,14 +481,14 @@ class INITSERVER(GUI2):
     # messages to the each clients
     
     
-    def broadcastMessage(self, message):
+    def broadcastMessage(self, message): #unused code
         
         for client in self.clients:
             
             client.send(message)   
 
 
-class GUI3(GUI):
+class GUI3(GUI): #initializes client GUI
 
     def __init__(self):
 
@@ -440,16 +541,14 @@ class GUI3(GUI):
         self.master3.destroy()
 
         g.master.deiconify()
-        #subprocess.call([sys.executable, "mainmenu.py"])
+        
 
-        #mainmenu.master.deiconify()
-
-class INITCLIENT(GUI3):
+class INITCLIENT(GUI3): #initiates client connections 
 
     def __init__(self):
 
         self.PORT = 5000
-        self.SERVER = "192.168.0.19"
+        self.SERVER = "192.168.0.19" #exact server address; may need to be changed depending on the computer
         self.ADDRESS = (self.SERVER, self.PORT)
         self.FORMAT = "utf-8"
 
@@ -460,7 +559,7 @@ class INITCLIENT(GUI3):
 
         self.name = g.entergname.get()
 
-        self.client.send(self.name.encode(self.FORMAT))
+        self.client.send(self.name.encode(self.FORMAT)) #sends client's name to server
 
 
 
@@ -468,9 +567,9 @@ class INITCLIENT(GUI3):
 
 if __name__ == "__main__":
 
-    #event = threading.Event()
 
     g = GUI()
+
     tk.mainloop()
 
 
