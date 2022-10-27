@@ -7,7 +7,7 @@ import numpy as np
 import argparse
 import imutils
 import time
-from cmake import dlib
+import dlib
 import cv2
 
 
@@ -46,7 +46,7 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
-vs = VideoStream(src=1).start()
+vs = VideoStream(src=0).start()
 # vs = VideoStream(usePiCamera=True).start()
 time.sleep(0)
 
