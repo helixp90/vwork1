@@ -47,6 +47,7 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
 vs = VideoStream(src=0).start()
+
 # vs = VideoStream(usePiCamera=True).start()
 time.sleep(0)
 
@@ -100,6 +101,8 @@ while True:
             cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
+            print ("Eyes closed")
+
 
         # otherwise, the eye aspect ratio is not below the blink
         # threshold
@@ -108,6 +111,8 @@ while True:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+            print ("Eyes open")
 
     # draw the total number of blinks on the frame along with
     # the computed eye aspect ratio for the frame
