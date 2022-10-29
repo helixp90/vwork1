@@ -12,6 +12,7 @@ from tkinter import ttk
 from threading import Thread
 from threading import Event
 from multiprocessing import Process
+import traceback
 
 from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
@@ -306,106 +307,118 @@ class GUI2(GUI): #admin/host UI
 
     def startstream(self):
 
-        EYE_AR_THRESH = 0.35
-        EYE_AR_CONSEC_FRAMES = 3
+        try:
 
-        # initialize the frame counters and the total number of blinks
-        COUNTER = 0
-        TOTAL = 0
+            for x in self.clients:
 
-        # initialize dlib's face detector (HOG-based) and then create
-        # the facial landmark predictor
-        print("[INFO] loading facial landmark predictor...")
-        detector = dlib.get_frontal_face_detector()
-        predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+                EYE_AR_THRESH = 0.35
+                EYE_AR_CONSEC_FRAMES = 3
 
-        # grab the indexes of the facial landmarks for the left and
-        # right eye, respectively
-        (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-        (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+                # initialize the frame counters and the total number of blinks
+                COUNTER = 0
+                TOTAL = 0
 
-        vs = VideoStream(src=0).start()
+                # initialize dlib's face detector (HOG-based) and then create
+                # the facial landmark predictor
+                print("[INFO] loading facial landmark predictor...")
+                detector = dlib.get_frontal_face_detector()
+                predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-        # vs = VideoStream(usePiCamera=True).start()
-        time.sleep(0)
+                print (x)
 
-        # loop over frames from the video stream
-        while True:
-            # if this is a file video stream, then we need to check if
-            # there any more frames left in the buffer to process
+                # grab the indexes of the facial landmarks for the left and
+                # right eye, respectively
+                (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+                (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
-            # grab the frame from the threaded video file stream, resize
-            # it, and convert it to grayscale
-            # channels)
-            frame = vs.read()
-            frame = imutils.resize(frame, width=1080 )
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                #vs = VideoStream(src=0).start()
 
-            # detect faces in the grayscale frame
-            rects = detector(gray, 0)
+                vs = VideoStream(src = "rtsp://" + x + "").start()
 
-            # loop over the face detections
-            for rect in rects:
-                # determine the facial landmarks for the face region, then
-                # convert the facial landmark (x, y)-coordinates to a NumPy
-                # array
-                shape = predictor(gray, rect)
-                shape = face_utils.shape_to_np(shape)
+                # vs = VideoStream(usePiCamera=True).start()
+                time.sleep(0)
 
-                # extract the left and right eye coordinates, then use the
-                # coordinates to compute the eye aspect ratio for both eyes
-                leftEye = shape[lStart:lEnd]
-                rightEye = shape[rStart:rEnd]
+                # loop over frames from the video stream
+                while True:
+                    # if this is a file video stream, then we need to check if
+                    # there any more frames left in the buffer to process
 
-                leftEAR = self.eye_aspect_ratio(leftEye)
-                rightEAR = self.eye_aspect_ratio(rightEye)
+                    # grab the frame from the threaded video file stream, resize
+                    # it, and convert it to grayscale
+                    # channels)
+                    frame = vs.read()
+                    frame = imutils.resize(frame, width=1080 )
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-                # average the eye aspect ratio together for both eyes
-                ear = (leftEAR + rightEAR)
+                    # detect faces in the grayscale frame
+                    rects = detector(gray, 0)
 
-                # compute the convex hull for the left and right eye, then
-                # visualize each of the eyes
-                leftEyeHull = cv2.convexHull(leftEye)
-                rightEyeHull = cv2.convexHull(rightEye)
-                cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
-                cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
+                    # loop over the face detections
+                    for rect in rects:
+                        # determine the facial landmarks for the face region, then
+                        # convert the facial landmark (x, y)-coordinates to a NumPy
+                        # array
+                        shape = predictor(gray, rect)
+                        shape = face_utils.shape_to_np(shape)
 
+                        # extract the left and right eye coordinates, then use the
+                        # coordinates to compute the eye aspect ratio for both eyes
+                        leftEye = shape[lStart:lEnd]
+                        rightEye = shape[rStart:rEnd]
 
-                # check to see if the eye aspect ratio is below the blink
-                # threshold, and if so, increment the blink frame counter
-                if ear < EYE_AR_THRESH:
-                    cv2.putText(frame, "Eye: {}".format("close"), (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                    cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                        leftEAR = self.eye_aspect_ratio(leftEye)
+                        rightEAR = self.eye_aspect_ratio(rightEye)
 
-                    print ("Eyes closed")
+                        # average the eye aspect ratio together for both eyes
+                        ear = (leftEAR + rightEAR)
+
+                        # compute the convex hull for the left and right eye, then
+                        # visualize each of the eyes
+                        leftEyeHull = cv2.convexHull(leftEye)
+                        rightEyeHull = cv2.convexHull(rightEye)
+                        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
+                        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
 
-                # otherwise, the eye aspect ratio is not below the blink
-                # threshold
-                else:
-                    cv2.putText(frame, "Eye: {}".format("Open"), (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                    cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                        # check to see if the eye aspect ratio is below the blink
+                        # threshold, and if so, increment the blink frame counter
+                        if ear < EYE_AR_THRESH:
+                            cv2.putText(frame, "Eye: {}".format("close"), (10, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-                    print ("Eyes open")
+                            print ("Eyes closed")
 
-            # draw the total number of blinks on the frame along with
-            # the computed eye aspect ratio for the frame
 
-            # show the frame
-            #cv2.imshow("Eye Close Detection Using EAR", frame)
-            key = cv2.waitKey(1) & 0xFF
+                        # otherwise, the eye aspect ratio is not below the blink
+                        # threshold
+                        else:
+                            cv2.putText(frame, "Eye: {}".format("Open"), (10, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-            # if the `q` key was pressed, break from the loop
-            if key == ord("q"):
-                break
+                            print ("Eyes open")
 
-        # do a bit of cleanup
-        cv2.destroyAllWindows()
-        vs.stop()
+                    # draw the total number of blinks on the frame along with
+                    # the computed eye aspect ratio for the frame
+
+                    # show the frame
+                    #cv2.imshow("Eye Close Detection Using EAR", frame)
+                    key = cv2.waitKey(1) & 0xFF
+
+                    # if the `q` key was pressed, break from the loop
+                    if key == ord("q"):
+                        break
+
+                # do a bit of cleanup
+                cv2.destroyAllWindows()
+                vs.stop()
+
+        except Exception as e:
+
+            print (traceback.format_exc())   
 
     def startChat(self):
 
@@ -433,12 +446,20 @@ class GUI2(GUI): #admin/host UI
                     # append the name and client
                     # to the respective list
 
-                    self.names.append(self.name)
-                    #clients.append(conn)
+                    #self.names.append(self.name)
+                    self.clients.append(self.addr[0])
 
                     self.clientlist.insert("end", self.name) #append client names to listbox
 
                     print(f"Name is {self.name}")
+
+                    #print (f"Address is {self.addr}")
+
+                    for y in self.clients:
+
+                        print (f"Address is {y}")
+
+                    #print (f"Address is {self.addr[0]}")
 
                     # broadcast message
                     #broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
