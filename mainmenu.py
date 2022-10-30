@@ -311,6 +311,8 @@ class GUI2(GUI): #admin/host UI
 
             for x in self.clients:
 
+                print ("INSIDE FOR LOOP THE: " + self.SERVER)
+
                 EYE_AR_THRESH = 0.35
                 EYE_AR_CONSEC_FRAMES = 3
 
@@ -324,7 +326,7 @@ class GUI2(GUI): #admin/host UI
                 detector = dlib.get_frontal_face_detector()
                 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-                print (x)
+                
 
                 # grab the indexes of the facial landmarks for the left and
                 # right eye, respectively
@@ -333,7 +335,7 @@ class GUI2(GUI): #admin/host UI
 
                 #vs = VideoStream(src=0).start()
 
-                vs = VideoStream(src = "rtsp://" + x + "").start()
+                vs = VideoStream(src = "rtsp://" + self.SERVER + "").start()
 
                 # vs = VideoStream(usePiCamera=True).start()
                 time.sleep(0)
@@ -405,7 +407,7 @@ class GUI2(GUI): #admin/host UI
                     # the computed eye aspect ratio for the frame
 
                     # show the frame
-                    #cv2.imshow("Eye Close Detection Using EAR", frame)
+                    cv2.imshow("Eye Close Detection Using EAR", frame)
                     key = cv2.waitKey(1) & 0xFF
 
                     # if the `q` key was pressed, break from the loop
