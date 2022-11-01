@@ -13,6 +13,7 @@ from threading import Thread
 from threading import Event
 from multiprocessing import Process
 import traceback
+import customtkinter as cust
 
 from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
@@ -28,37 +29,57 @@ import cv2
 #lobbycode = ''
 
 
-class GUI:  #initializes root/mainmenu window
+class GUI(cust.CTk):  #initializes root/mainmenu window
 
         def __init__(self):
 
-            self.master = tk.Tk()
+            #self.master = cust.CTk()
 
-            self.master.title("Sleep Detection Monitoring Software")
-            self.master.geometry("")
+            super().__init__()
 
+            self.title("Sleep Detection Monitoring Software")
+            
+            self.geometry(f"{300}x{200}")
 
-            self.windowtitle = tk.Label(self.master, text = "Sleep Detection Monitoring Software", font = ("Times New Roman", 15), fg = "Black")
-            self.windowtitle.pack()
+            self.resizable(False, False)
 
-
-            self.back = tk.Button(self.master, text = "Back", bg = "Red", fg = "White", state = "disabled", command = lambda: self.goback())
-            self.back.pack(anchor = tk.SW, side = tk.BOTTOM)
-
-            self.exit = tk.Button(self.master, text = "Exit", bg = "Red", fg = "White", command = exit)
-            self.exit.pack(anchor = tk.SE, side = tk.BOTTOM)
-
-
-            self.masterframe = tk.Frame(self.master)
-
-            self.masterframe.pack(anchor = tk.CENTER)
+            self.grid_rowconfigure(0, weight = 1)
+            self.grid_rowconfigure(1, weight = 1)
+            self.grid_rowconfigure(2, weight = 1)
+            #self.grid_rowconfigure(0, weight = 1)
 
 
-            self.clobbybutton = tk.Button(self.masterframe, text = "Create Lobby", bg = "Black", fg = "White", command = lambda: self.packcreateframe())
+            self.windowtitle = cust.CTkLabel(self, text = "Sleep Detection Monitoring Software", text_font = ("Times New Roman", 15), fg = "Black")
+            self.windowtitle.grid(row = 0, column = 0, sticky = "nswe")
+
+            self.masterframe = cust.CTkFrame(self, corner_radius = 0)
+
+            self.masterframe.grid(row = 1, column = 0, sticky = "nswe")
+
+            self.masterframe.grid_rowconfigure(0, minsize = 10, weight = 1)   # empty row with minsize as spacing
+            self.masterframe.grid_columnconfigure(1, weight = 1)  # empty row as spacing
+            #self.masterframe.grid_rowconfigure(2, minsize = 10)    # empty row with minsize as spacing
+
+            self.masterframe.grid_columnconfigure(2, minsize = 10, weight = 1)
+
+
+            self.clobbybutton = cust.CTkButton(self.masterframe, text = "Create Lobby", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: self.packcreateframe())
             self.clobbybutton.grid(row = 0, column = 0)
 
-            self.jlobbybutton = tk.Button(self.masterframe, text = "Join Lobby", bg = "Black", fg = "White", command = lambda: self.packjoinframe())
-            self.jlobbybutton.grid(row = 0, column = 1)
+            self.jlobbybutton = cust.CTkButton(self.masterframe, text = "Join Lobby", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: self.packjoinframe())
+            self.jlobbybutton.grid(row = 0, column = 2)
+
+
+
+            self.masterframe2 = cust.CTkFrame(self, corner_radius = 0)
+
+            self.masterframe2.grid(row = 2, column = 0, sticky = "nswe")
+
+            self.back = cust.CTkButton(self.masterframe2, text = "Back", fg_color = "Red", text_color = "White", hover_color = "Maroon", state = "disabled", command = lambda: self.goback())
+            self.back.pack(side = cust.BOTTOM, pady=5, padx=5)
+
+            self.exit = cust.CTkButton(self.masterframe2, text = "Exit", fg_color = "Red", text_color = "White", hover_color = "Maroon", command = exit)
+            self.exit.pack(side = cust.BOTTOM, pady=5, padx=5)
 
 
         def packcreateframe(self): 
@@ -125,7 +146,7 @@ class GUI:  #initializes root/mainmenu window
 
                 clobbyname = self.enterlname.get()
 
-                self.master.withdraw()
+                self.withdraw()
                 
                 self.h = GUI2()
                 
@@ -143,7 +164,7 @@ class GUI:  #initializes root/mainmenu window
                     
                     #if self.enterlcode.get() == lobbycode:
 
-                        self.master.withdraw()
+                        self.withdraw()
                         #subprocess.call([sys.executable, "join.py"])
                         self.j = GUI3()
 
@@ -508,7 +529,7 @@ class GUI2(GUI): #admin/host UI
         self.master2.destroy()
         
         #subprocess.call([sys.executable, "mainmenu.py"])
-        g.master.deiconify()
+        g.deiconify()
         #mainmenu.master.deiconify()
 
 
@@ -531,6 +552,7 @@ class GUI3(GUI): #initializes client GUI
 
     def __init__(self):
 
+       
         self.master3 = tk.Toplevel()
 
         self.master3.title("Joined Lobby")
@@ -571,22 +593,8 @@ class GUI3(GUI): #initializes client GUI
         self.notiflist = tk.Listbox(self.bigframe2)
         self.notiflist.pack(expand = 1)
 
-        self.i = INITCLIENT()
-
-    def leavewindow(self):
-
-        self.i.client.close()
-
-        self.master3.destroy()
-
-        g.master.deiconify()
-        
-
-class INITCLIENT(GUI3): #initiates client connections 
-
-    def __init__(self):
-
         self.PORT = 5000
+        
         self.SERVER = "192.168.0.19" #exact server address; may need to be changed depending on the computer
         self.ADDRESS = (self.SERVER, self.PORT)
         self.FORMAT = "utf-8"
@@ -600,8 +608,15 @@ class INITCLIENT(GUI3): #initiates client connections
 
         self.client.send(self.name.encode(self.FORMAT)) #sends client's name to server
 
+        #self.i = INITCLIENT()
 
+    def leavewindow(self):
 
+        self.client.close()
+
+        self.master3.destroy()
+
+        g.deiconify()
 
 
 if __name__ == "__main__":
@@ -609,6 +624,6 @@ if __name__ == "__main__":
 
     g = GUI()
 
-    tk.mainloop()
+    g.mainloop()
 
 
