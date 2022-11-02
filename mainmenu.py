@@ -84,61 +84,72 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
 
         def packcreateframe(self): 
 
-            self.createframe = tk.Frame(self.master)
+            self.createframe = cust.CTkFrame(self, corner_radius = 0)
 
-            self.enterlname = tk.Entry(self.createframe)
-            self.enterlname.insert(0, "Enter Lobby Name")
-            self.enterlname.grid(row = 0, column = 0)
+            self.createframe.grid_rowconfigure(0, minsize = 10, weight = 1)   # empty row with minsize as spacing
+            self.createframe.grid_rowconfigure(1, minsize = 10, weight = 1)    # empty row with minsize as spacing
+            self.createframe.grid_columnconfigure(0, weight = 1)  # empty row as spacing
+            #self.createframe.grid_columnconfigure(2, minsize = 10, weight = 1)
 
-            self.mlobbybutton = tk.Button(self.createframe, text = "Make Lobby", bg = "Black", fg = "White", command = lambda: self.makelobby())
-            self.mlobbybutton.grid(row = 1, column = 0)
+            self.enterlname = cust.CTkEntry(self.createframe, placeholder_text = "Enter Lobby Name")
+            #self.enterlname.insert(0, "Enter Lobby Name")
+            self.enterlname.grid(row = 0, pady = 20, padx = 20, sticky = "news")
+
+            self.mlobbybutton = cust.CTkButton(self.createframe, text = "Make Lobby", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: self.makelobby())
+            self.mlobbybutton.grid(row = 1, sticky = "news")
 
 
-            self.masterframe.pack_forget()
+            self.masterframe.grid_remove()
                     
-            self.createframe.pack(anchor = tk.CENTER)
-            self.back["state"] = "active"
+            self.createframe.grid(row = 1, column = 0, sticky = "nswe")
+            self.back.configure(state = cust.NORMAL)
 
             self.current_frame = self.createframe
 
 
         def packjoinframe(self):
 
-            self.joinframe = tk.Frame(self.master)
+            self.joinframe = cust.CTkFrame(self, corner_radius = 0)
 
-            self.entergname = tk.Entry(self.joinframe)
-            self.entergname.insert(0, "Enter your name")
-            self.entergname.grid(row = 0, column = 0)
+            self.joinframe.grid_rowconfigure(0, weight = 1)   # empty row with minsize as spacing
+            self.joinframe.grid_rowconfigure(1, weight = 1)    # empty row with minsize as spacing
+            self.joinframe.grid_columnconfigure(0, weight = 1)  # empty row as spacing
+            self.joinframe.grid_columnconfigure(1, weight = 1)
+            #self.joinframe.grid_columnconfigure(2, weight = 1)
 
-            self.enterlcode = tk.Entry(self.joinframe)
-            self.enterlcode.insert(0, "Enter Lobby Code")
-            self.enterlcode.grid(row = 0, column = 1)
+            self.entergname = cust.CTkEntry(self.joinframe, placeholder_text = "Enter your name")
+            #self.entergname.insert(0, "Enter your name")
+            self.entergname.grid(row = 0, column = 0, pady = 1, padx = 1)
 
-            self.joinbutton = tk.Button(self.joinframe, text = "Join", bg = "Black", fg = "White", command = lambda: self.joinlobby())
-            self.joinbutton.grid(row = 1, column = 0)
+            self.enterlcode = cust.CTkEntry(self.joinframe, placeholder_text = "Enter the Lobby Code")
+            #self.enterlcode.insert(0, "Enter Lobby Code")
+            self.enterlcode.grid(row = 0, column = 1, pady = 1, padx = 1)
+
+            self.joinbutton = cust.CTkButton(self.joinframe, text = "Join", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: self.joinlobby())
+            self.joinbutton.grid(row = 1, column = 1, pady = 1, padx = 1)
 
 
-            self.masterframe.pack_forget()
+            self.masterframe.grid_remove()
                     
-            self.joinframe.pack(anchor = tk.CENTER)
-            self.back["state"] = "active"
+            self.joinframe.grid(row = 1, column = 0, sticky = "nswe")
+            self.back.configure(state = cust.NORMAL)
 
             self.current_frame = self.joinframe
 
 
         def goback(self):
 
-            self.current_frame.pack_forget()
+            self.current_frame.grid_remove()
 
-            self.masterframe.pack(anchor = tk.CENTER)
-            self.back["state"] = "disabled" 
+            self.masterframe.grid(row = 1, column = 0, sticky = "nswe")
+            self.back.configure(state = cust.DISABLED)
 
 
         def makelobby(self): #hides main menu window and initializes admin/host GUI
 
             global clobbyname
 
-            if (self.enterlname.index("end") == 0):
+            if len(self.enterlname.get()) == 0:
 
                 messagebox.showwarning("Invalid input!", "Lobby should have a name!")
 
@@ -154,7 +165,7 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
         def joinlobby(self): #hides main menu window and initializes client GUI
 
 
-            if (self.entergname.index("end") == 0 or self.enterlcode.index("end") == 0):
+            if len(self.entergname.get()) == 0 or len (self.enterlcode.get()) == 0:
 
                 messagebox.showwarning("Invalid input!", "Name and/or code should have input!")
 
@@ -237,7 +248,7 @@ class GUI2(GUI): #admin/host UI
         self.ecdlabel = tk.Label(self.master2, text = "Eye Closure Detection", font = ("Times New Roman", 15), fg = "Black")
         self.ecdlabel.pack(anchor = tk.CENTER)
 
-        self.ecdpower = tk.Button(self.master2, text = "On/Off", bg = "Black", fg = "White", command = lambda: Thread(target = self.startstream).start())
+        self.ecdpower = cust.CTkButton(self.master2, text = "Off", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: Thread(target = self.startstream).start())
         self.ecdpower.pack()
 
 
@@ -310,138 +321,15 @@ class GUI2(GUI): #admin/host UI
         #self.appendtolist()
         #self.thread.join()
 
-    def eye_aspect_ratio(self, eye):
-        # compute the euclidean distances between the two sets of
-        # vertical eye landmarks (x, y)-coordinates
-        a = dist.euclidean(eye[1], eye[5])
-        b = dist.euclidean(eye[2], eye[4])
-
-        # compute the euclidean distance between the horizonta
-        # eye landmark (x, y)-coordinates
-        c = dist.euclidean(eye[0], eye[3])
-
-        # compute the eye aspect ratio
-        ear = (a + b) / (2.0 * c)
-
-        # return the eye aspect ratio
-        return ear
-
     def startstream(self):
 
-        try:
+        if self.ecdpower.text == "Off":
 
-            for x in self.clients:
+            self.ecdpower.configure(text = "On", bgcolor = "Green")
 
-                print ("INSIDE FOR LOOP THE: " + self.SERVER)
+            self.conn.send("On")
 
-                EYE_AR_THRESH = 0.35
-                EYE_AR_CONSEC_FRAMES = 3
-
-                # initialize the frame counters and the total number of blinks
-                COUNTER = 0
-                TOTAL = 0
-
-                # initialize dlib's face detector (HOG-based) and then create
-                # the facial landmark predictor
-                print("[INFO] loading facial landmark predictor...")
-                detector = dlib.get_frontal_face_detector()
-                predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-
-                
-
-                # grab the indexes of the facial landmarks for the left and
-                # right eye, respectively
-                (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-                (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-
-                #vs = VideoStream(src=0).start()
-
-                vs = VideoStream(src = "rtsp://" + self.SERVER + "").start()
-
-                # vs = VideoStream(usePiCamera=True).start()
-                time.sleep(0)
-
-                # loop over frames from the video stream
-                while True:
-                    # if this is a file video stream, then we need to check if
-                    # there any more frames left in the buffer to process
-
-                    # grab the frame from the threaded video file stream, resize
-                    # it, and convert it to grayscale
-                    # channels)
-                    frame = vs.read()
-                    frame = imutils.resize(frame, width=1080 )
-                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-                    # detect faces in the grayscale frame
-                    rects = detector(gray, 0)
-
-                    # loop over the face detections
-                    for rect in rects:
-                        # determine the facial landmarks for the face region, then
-                        # convert the facial landmark (x, y)-coordinates to a NumPy
-                        # array
-                        shape = predictor(gray, rect)
-                        shape = face_utils.shape_to_np(shape)
-
-                        # extract the left and right eye coordinates, then use the
-                        # coordinates to compute the eye aspect ratio for both eyes
-                        leftEye = shape[lStart:lEnd]
-                        rightEye = shape[rStart:rEnd]
-
-                        leftEAR = self.eye_aspect_ratio(leftEye)
-                        rightEAR = self.eye_aspect_ratio(rightEye)
-
-                        # average the eye aspect ratio together for both eyes
-                        ear = (leftEAR + rightEAR)
-
-                        # compute the convex hull for the left and right eye, then
-                        # visualize each of the eyes
-                        leftEyeHull = cv2.convexHull(leftEye)
-                        rightEyeHull = cv2.convexHull(rightEye)
-                        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
-                        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
-
-
-                        # check to see if the eye aspect ratio is below the blink
-                        # threshold, and if so, increment the blink frame counter
-                        if ear < EYE_AR_THRESH:
-                            cv2.putText(frame, "Eye: {}".format("close"), (10, 30),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                            cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
-                            print ("Eyes closed")
-
-
-                        # otherwise, the eye aspect ratio is not below the blink
-                        # threshold
-                        else:
-                            cv2.putText(frame, "Eye: {}".format("Open"), (10, 30),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                            cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
-                            print ("Eyes open")
-
-                    # draw the total number of blinks on the frame along with
-                    # the computed eye aspect ratio for the frame
-
-                    # show the frame
-                    cv2.imshow("Eye Close Detection Using EAR", frame)
-                    key = cv2.waitKey(1) & 0xFF
-
-                    # if the `q` key was pressed, break from the loop
-                    if key == ord("q"):
-                        break
-
-                # do a bit of cleanup
-                cv2.destroyAllWindows()
-                vs.stop()
-
-        except Exception as e:
-
-            print (traceback.format_exc())   
+    
 
     def startChat(self):
 
@@ -617,6 +505,139 @@ class GUI3(GUI): #initializes client GUI
         self.master3.destroy()
 
         g.deiconify()
+
+    def eye_aspect_ratio(self, eye):
+        # compute the euclidean distances between the two sets of
+        # vertical eye landmarks (x, y)-coordinates
+        a = dist.euclidean(eye[1], eye[5])
+        b = dist.euclidean(eye[2], eye[4])
+
+        # compute the euclidean distance between the horizonta
+        # eye landmark (x, y)-coordinates
+        c = dist.euclidean(eye[0], eye[3])
+
+        # compute the eye aspect ratio
+        ear = (a + b) / (2.0 * c)
+
+        # return the eye aspect ratio
+        return ear
+
+    def startstream2(self):
+
+        try:
+
+            for x in self.clients:
+
+                print ("INSIDE FOR LOOP THE: " + self.SERVER)
+
+                EYE_AR_THRESH = 0.35
+                EYE_AR_CONSEC_FRAMES = 3
+
+                # initialize the frame counters and the total number of blinks
+                COUNTER = 0
+                TOTAL = 0
+
+                # initialize dlib's face detector (HOG-based) and then create
+                # the facial landmark predictor
+                print("[INFO] loading facial landmark predictor...")
+                detector = dlib.get_frontal_face_detector()
+                predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
+                
+
+                # grab the indexes of the facial landmarks for the left and
+                # right eye, respectively
+                (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+                (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+
+                #vs = VideoStream(src=0).start()
+
+                vs = VideoStream(src = "rtsp://" + self.SERVER + "").start()
+
+                # vs = VideoStream(usePiCamera=True).start()
+                time.sleep(0)
+
+                # loop over frames from the video stream
+                while True:
+                    # if this is a file video stream, then we need to check if
+                    # there any more frames left in the buffer to process
+
+                    # grab the frame from the threaded video file stream, resize
+                    # it, and convert it to grayscale
+                    # channels)
+                    frame = vs.read()
+                    frame = imutils.resize(frame, width=1080 )
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+                    # detect faces in the grayscale frame
+                    rects = detector(gray, 0)
+
+                    # loop over the face detections
+                    for rect in rects:
+                        # determine the facial landmarks for the face region, then
+                        # convert the facial landmark (x, y)-coordinates to a NumPy
+                        # array
+                        shape = predictor(gray, rect)
+                        shape = face_utils.shape_to_np(shape)
+
+                        # extract the left and right eye coordinates, then use the
+                        # coordinates to compute the eye aspect ratio for both eyes
+                        leftEye = shape[lStart:lEnd]
+                        rightEye = shape[rStart:rEnd]
+
+                        leftEAR = self.eye_aspect_ratio(leftEye)
+                        rightEAR = self.eye_aspect_ratio(rightEye)
+
+                        # average the eye aspect ratio together for both eyes
+                        ear = (leftEAR + rightEAR)
+
+                        # compute the convex hull for the left and right eye, then
+                        # visualize each of the eyes
+                        leftEyeHull = cv2.convexHull(leftEye)
+                        rightEyeHull = cv2.convexHull(rightEye)
+                        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
+                        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
+
+
+                        # check to see if the eye aspect ratio is below the blink
+                        # threshold, and if so, increment the blink frame counter
+                        if ear < EYE_AR_THRESH:
+                            cv2.putText(frame, "Eye: {}".format("close"), (10, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+                            print ("Eyes closed")
+
+
+                        # otherwise, the eye aspect ratio is not below the blink
+                        # threshold
+                        else:
+                            cv2.putText(frame, "Eye: {}".format("Open"), (10, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+                            print ("Eyes open")
+
+                    # draw the total number of blinks on the frame along with
+                    # the computed eye aspect ratio for the frame
+
+                    # show the frame
+                    cv2.imshow("Eye Close Detection Using EAR", frame)
+                    key = cv2.waitKey(1) & 0xFF
+
+                    # if the `q` key was pressed, break from the loop
+                    if key == ord("q"):
+                        break
+
+                # do a bit of cleanup
+                cv2.destroyAllWindows()
+                vs.stop()
+
+        except Exception as e:
+
+            print (traceback.format_exc())   
 
 
 if __name__ == "__main__":
