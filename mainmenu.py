@@ -251,6 +251,8 @@ class GUI2(GUI): #admin/host UI
         self.ecdpower = cust.CTkButton(self.master2, text = "Off", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: Thread(target = self.startstream).start())
         self.ecdpower.pack()
 
+        #print (self.ecdpower.cget('fg_color'))
+
 
         self.bigframe = tk.Frame(self.master2, background = "Black")
         self.bigframe.pack(anchor = tk.CENTER)
@@ -323,13 +325,25 @@ class GUI2(GUI): #admin/host UI
 
     def startstream(self):
 
-        if self.ecdpower.text == "Off":
+        try:
 
-            self.ecdpower.configure(text = "On", bgcolor = "Green")
+            for x in self.clients:
 
-            self.conn.send("On")
+                if self.ecdpower.cget('text') == 'Off':
 
-    
+                    self.ecdpower.configure(text = "On", bgcolor = "Green")
+
+                    x.send("On")
+
+                else:
+                    
+                    self.ecdpower.configure(text = "Off", bgcolor = "Red")
+
+                    x.send("Off")
+
+        except:
+
+            print (traceback.format_exc())
 
     def startChat(self):
 
@@ -358,7 +372,7 @@ class GUI2(GUI): #admin/host UI
                     # to the respective list
 
                     #self.names.append(self.name)
-                    self.clients.append(self.addr[0])
+                    self.clients.append(self.conn)
 
                     self.clientlist.insert("end", self.name) #append client names to listbox
 
@@ -496,7 +510,13 @@ class GUI3(GUI): #initializes client GUI
 
         self.client.send(self.name.encode(self.FORMAT)) #sends client's name to server
 
+        self.rev = Thread(target = self.startstream2)
+
+        self.rev.start()
+
         #self.i = INITCLIENT()
+
+    
 
     def leavewindow(self):
 
@@ -526,7 +546,12 @@ class GUI3(GUI): #initializes client GUI
 
         try:
 
-            for x in self.clients:
+            self.message = self.client.recv(1024).decode(self.FORMAT)
+
+            vs = VideoStream(src = 0).start()
+
+            if self.message == "On":
+
 
                 print ("INSIDE FOR LOOP THE: " + self.SERVER)
 
@@ -543,8 +568,6 @@ class GUI3(GUI): #initializes client GUI
                 detector = dlib.get_frontal_face_detector()
                 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-                
-
                 # grab the indexes of the facial landmarks for the left and
                 # right eye, respectively
                 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
@@ -552,7 +575,7 @@ class GUI3(GUI): #initializes client GUI
 
                 #vs = VideoStream(src=0).start()
 
-                vs = VideoStream(src = "rtsp://" + self.SERVER + "").start()
+                
 
                 # vs = VideoStream(usePiCamera=True).start()
                 time.sleep(0)
@@ -632,12 +655,22 @@ class GUI3(GUI): #initializes client GUI
                         break
 
                 # do a bit of cleanup
+                #cv2.destroyAllWindows()
+                #vs.stop()
+            else:
+
                 cv2.destroyAllWindows()
                 vs.stop()
 
         except Exception as e:
 
-            print (traceback.format_exc())   
+            if e == ConnectionResetError:
+
+                messagebox.showerror("Lobby Closed!", "The host has closed this lobby.")
+
+            else:
+
+                print (traceback.format_exc())   
 
 
 if __name__ == "__main__":
