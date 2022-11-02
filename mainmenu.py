@@ -29,6 +29,8 @@ import cv2
 #lobbycode = ''
 
 
+
+
 class GUI(cust.CTk):  #initializes root/mainmenu window
 
         def __init__(self):
@@ -325,21 +327,27 @@ class GUI2(GUI): #admin/host UI
 
     def startstream(self):
 
+        global number
+
+        number = 0
+
         try:
+
+            number = number + 1
 
             for x in self.clients:
 
-                if self.ecdpower.cget('text') == 'Off':
+                if number % 2 != 0:
 
-                    self.ecdpower.configure(text = "On", bgcolor = "Green")
+                    self.ecdpower.configure(text = "On", fg_color = "Green")
 
-                    x.send("On")
+                    x.send(("On").encode(self.FORMAT))
 
                 else:
                     
-                    self.ecdpower.configure(text = "Off", bgcolor = "Red")
+                    self.ecdpower.configure(text = "Off", fg_color = "Red")
 
-                    x.send("Off")
+                    x.send(("Off").encode(self.FORMAT))
 
         except:
 
