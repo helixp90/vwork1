@@ -93,7 +93,7 @@ class INITSERVER(): #initializes and runs the server
 
             # Start the handling thread
             #self.thread = threading.Thread(target = self.handle, args = (self.conn, self.addr))
-            #self.thread.start()
+            #self.thread.start()            
 
             # no. of clients connected
             # to the server
