@@ -196,13 +196,11 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
             return self.enterlname.get()
 
 
-class GUI2(GUI): #admin/host UI
+class GUI2(cust.CTk): #admin/host UI
 
     def __init__(self):
 
-        self.checksignal(0)
-
-        #print (self.z)
+        #super().__init__()
 
         self.PORT = 5000
         
@@ -230,28 +228,62 @@ class GUI2(GUI): #admin/host UI
         # bind the address of the
         # server to the socket
         self.server.bind(self.ADDRESS)
+        
 
-        self.master2 = tk.Toplevel()
+        self.master2 = cust.CTkToplevel()
 
-        self.master2.title("Admin Lobby")
-        self.master2.geometry("")
+        
+        self.master2.title("Admin/Host Lobby")
+        self.master2.geometry(f"{400}x{400}")
 
-        self.leave = tk.Button(self.master2, text = "Leave", bg = "Red", fg = "White", command = lambda: self.leavewindow())
-        self.leave.pack(anchor = tk.NW, side = tk.TOP)
+        self.master2.resizable(False, False)
+
+        self.master2.grid_rowconfigure(0, weight = 1)
+        self.master2.grid_columnconfigure(1, weight = 1)
+
+        #self.grid_rowconfigure(1, weight = 1)
+        #self.grid_rowconfigure(2, weight = 1)
+        #self.master2.grid_rowconfigure(0, weight = 1)
+
+        self.frame_left = cust.CTkFrame(self.master2, corner_radius = 0)
+        self.frame_left.grid(row = 0, column = 0, sticky = "nswe", padx = 20, pady = 20)
+
+        self.frame_right = cust.CTkFrame(self.master2, corner_radius = 0, width = 180)
+        self.frame_right.grid(row = 0, column = 1, sticky= "nswe")
 
 
-        self.lnumberframe = tk.Frame(self.master2, background = "Black")
-        self.lnumberframe.pack(side = tk.LEFT)
+        self.frame_left.grid_rowconfigure(0, weight = 1)
+        self.frame_left.grid_rowconfigure(1, weight = 1)
+        self.frame_left.grid_rowconfigure(2, weight = 1)
+        self.frame_left.grid_rowconfigure(3, weight = 1, minsize = 10)
 
-        self.lnumber = tk.Label(self.lnumberframe, font = ("Times New Roman", 15), fg = "Black")
-        self.lnumber.pack(fill = "both")
+        self.frame_left.grid_columnconfigure(0, weight = 1)
+        self.frame_left.grid_columnconfigure(1, weight = 1)
+        self.frame_left.grid_columnconfigure(2, weight = 1)
+        self.frame_left.grid_columnconfigure(3, weight = 1)
+        self.frame_left.grid_columnconfigure(4, weight = 1)
+        self.frame_left.grid_columnconfigure(5, weight = 1)
+
+        #self.grid_rowconfigure(1, weight = 1)
+        #self.grid_rowconfigure(2, weight = 1)
+        #self.master2.grid_rowconfigure(0, weight = 1)
+
+        
+        self.leave = cust.CTkButton(self.frame_left, text = "Leave", fg_color = "Red", text_color = "White", hover_color = "Maroon", command = lambda: self.leavewindow())
+        self.leave.grid(row = 0, column = 0, sticky = "w")
 
 
-        self.ecdlabel = tk.Label(self.master2, text = "Eye Closure Detection", font = ("Times New Roman", 15), fg = "Black")
-        self.ecdlabel.pack(anchor = tk.CENTER)
+        self.ecdlabel = cust.CTkLabel(self.frame_left, text = "Eye Closure Detection", text_font = ("Times New Roman", 10), fg = "Black")
+        self.ecdlabel.grid(row = 0, column = 6, sticky = "nsew")
 
-        self.ecdpower = cust.CTkButton(self.master2, text = "Off", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: Thread(target = self.startstream).start())
-        self.ecdpower.pack()
+        self.frame_code = cust.CTkFrame(self.frame_left, corner_radius = 0, border_color = "Black")
+        self.frame_code.grid(row = 2, column = 2, sticky= "nswe", columnspan = 1, rowspan = 2)
+
+        self.lnumber = cust.CTkLabel(self.frame_code, text_font = ("Times New Roman", 15), fg = "Black", corner_radius = 2)
+        self.lnumber.grid(row = 0, column = 0, sticky = "nsew")
+
+        self.ecdpower = cust.CTkButton(self.frame_left, text = "Off", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: Thread(target = self.startstream).start())
+        self.ecdpower.grid(row = 2, column = 6, sticky = "nsew")
 
         #print (self.ecdpower.cget('fg_color'))
 
@@ -286,7 +318,7 @@ class GUI2(GUI): #admin/host UI
         self.clientlist = tk.Listbox(self.clientframe)
         self.clientlist.pack(expand = 1)
 
-
+        
         self.bigframe2 = tk.Frame(self.master2, background = "Black")
         self.bigframe2.pack(side = tk.RIGHT)
 
@@ -333,9 +365,9 @@ class GUI2(GUI): #admin/host UI
 
         try:
 
-            number = number + 1
-
             for x in self.clients:
+
+                number = number + 1
 
                 if number % 2 != 0:
 
