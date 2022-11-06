@@ -200,7 +200,7 @@ class GUI2(cust.CTk): #admin/host UI
 
     def __init__(self):
 
-        #super().__init__()
+        super().__init__()
 
         self.PORT = 5000
         
@@ -236,20 +236,24 @@ class GUI2(cust.CTk): #admin/host UI
         self.master2.title("Admin/Host Lobby")
         self.master2.geometry(f"{400}x{400}")
 
-        self.master2.resizable(False, False)
+        #self.master2.resizable(False, False)
 
         self.master2.grid_rowconfigure(0, weight = 1)
+
+        self.master2.grid_columnconfigure(0, weight = 1)
         self.master2.grid_columnconfigure(1, weight = 1)
 
         #self.grid_rowconfigure(1, weight = 1)
         #self.grid_rowconfigure(2, weight = 1)
         #self.master2.grid_rowconfigure(0, weight = 1)
 
-        self.frame_left = cust.CTkFrame(self.master2, corner_radius = 0)
+        self.frame_left = cust.CTkFrame(self.master2, corner_radius = 0, bg_color = "White")
         self.frame_left.grid(row = 0, column = 0, sticky = "nswe", padx = 20, pady = 20)
 
         self.frame_right = cust.CTkFrame(self.master2, corner_radius = 0, width = 180)
         self.frame_right.grid(row = 0, column = 1, sticky= "nswe")
+
+        # ============ frame_left ============
 
 
         self.frame_left.grid_rowconfigure(0, weight = 1)
@@ -260,9 +264,9 @@ class GUI2(cust.CTk): #admin/host UI
         self.frame_left.grid_columnconfigure(0, weight = 1)
         self.frame_left.grid_columnconfigure(1, weight = 1)
         self.frame_left.grid_columnconfigure(2, weight = 1)
-        self.frame_left.grid_columnconfigure(3, weight = 1)
-        self.frame_left.grid_columnconfigure(4, weight = 1)
-        self.frame_left.grid_columnconfigure(5, weight = 1)
+        #self.frame_left.grid_columnconfigure(3, weight = 1)
+        #self.frame_left.grid_columnconfigure(4, weight = 1)
+        #self.frame_left.grid_columnconfigure(5, weight = 1)
 
         #self.grid_rowconfigure(1, weight = 1)
         #self.grid_rowconfigure(2, weight = 1)
@@ -270,67 +274,83 @@ class GUI2(cust.CTk): #admin/host UI
 
         
         self.leave = cust.CTkButton(self.frame_left, text = "Leave", fg_color = "Red", text_color = "White", hover_color = "Maroon", command = lambda: self.leavewindow())
-        self.leave.grid(row = 0, column = 0, sticky = "w")
+        self.leave.grid(row = 0, column = 0, sticky = "n", padx = 1, pady = 1)
 
 
-        self.ecdlabel = cust.CTkLabel(self.frame_left, text = "Eye Closure Detection", text_font = ("Times New Roman", 10), fg = "Black")
-        self.ecdlabel.grid(row = 0, column = 6, sticky = "nsew")
+        self.ecdlabel = cust.CTkLabel(self.frame_left, text = "Eye Closure Detection", text_font = ("Arial Bold", 15), fg = "Black")
+        self.ecdlabel.grid(row = 0, column = 2, sticky = "n")
 
-        self.frame_code = cust.CTkFrame(self.frame_left, corner_radius = 0, border_color = "Black")
-        self.frame_code.grid(row = 2, column = 2, sticky= "nswe", columnspan = 1, rowspan = 2)
+        self.frame_code = cust.CTkFrame(self.frame_left, corner_radius = 0, border_color = "Blue")
+        self.frame_code.grid(row = 1, column = 1, sticky= "nswe")
 
-        self.lnumber = cust.CTkLabel(self.frame_code, text_font = ("Times New Roman", 15), fg = "Black", corner_radius = 2)
-        self.lnumber.grid(row = 0, column = 0, sticky = "nsew")
+        self.lnumber = cust.CTkLabel(self.frame_code, text = "# ", text_font = ("Times New Roman", 15), fg = "Black", corner_radius = 0)
+        self.lnumber.grid(row = 0, column = 0)
 
         self.ecdpower = cust.CTkButton(self.frame_left, text = "Off", fg_color = "Black", text_color = "White", hover_color = "Silver", command = lambda: Thread(target = self.startstream).start())
-        self.ecdpower.grid(row = 2, column = 6, sticky = "nsew")
+        self.ecdpower.grid(row = 1, column = 2)
 
         #print (self.ecdpower.cget('fg_color'))
 
 
-        self.bigframe = tk.Frame(self.master2, background = "Black")
-        self.bigframe.pack(anchor = tk.CENTER)
+        self.bigframe = cust.CTkFrame(self.frame_left, corner_radius = 0, border_color = "Black")
+        self.bigframe.grid(row = 4, column = 1, sticky= "nswe", columnspan = 2, rowspan = 4, pady = 20, padx = 20)
+
+        self.bigframe.grid_rowconfigure(0, weight = 1)
+        self.bigframe.grid_rowconfigure(1, weight = 1)
+        self.bigframe.grid_rowconfigure(2, weight = 1)
+
+        self.bigframe.grid_columnconfigure(0, weight = 1)
+        self.bigframe.grid_columnconfigure(1, weight = 1)
+        self.bigframe.grid_columnconfigure(2, weight = 1)
+        self.bigframe.grid_columnconfigure(3, weight = 1)
+        self.bigframe.grid_columnconfigure(4, weight = 1)
 
         
-        self.nameframe = tk.Frame(self.bigframe, background = "Blue")
-        self.nameframe.pack(anchor = tk.NW, side = tk.LEFT)
+        self.nameframe = cust.CTkFrame(self.bigframe, border_color = "Blue")
+        self.nameframe.grid(row = 0, column = 0, sticky = "nsew")
 
-        self.lname = tk.Label(self.nameframe, text = "Name", font = ("Times New Roman", 15), fg = "Blue")
-        self.lname.pack(fill = "both")
-
-        self.statusframe = tk.Frame(self.bigframe, background = "Blue")
-        self.statusframe.pack(anchor = tk.CENTER, side = tk.TOP)
-
-        self.lstatus = tk.Label(self.bigframe, text = "Status", font = ("Times New Roman", 15), fg = "Blue")
-        self.lstatus.pack(fill = "both")
-
-        self.idframe = tk.Frame(self.bigframe, background = "Blue")
-        self.idframe.pack(anchor = tk.NE, side = tk.RIGHT)
-
-        self.lid = tk.Label(self.idframe, text = "#ID Number", font = ("Times New Roman", 15), fg = "Blue")
-        self.lid.pack(fill = "both")
+        self.lname = cust.CTkLabel(self.nameframe, text = "Name", text_font = ("Times New Roman", 10), fg = "Blue")
+        self.lname.grid(row = 0, column = 0, sticky = "nsew")
 
 
-        self.clientframe = tk.Frame(self.bigframe, background = "Green")
-        self.clientframe.pack(side = tk.BOTTOM)
+        self.statusframe = cust.CTkFrame(self.bigframe, border_color = "Blue")
+        self.statusframe.grid(row = 0, column = 2, sticky = "nsew")
+
+        self.lstatus = cust.CTkLabel(self.statusframe, text = "Status", text_font = ("Times New Roman", 10), fg = "Black")
+        self.lstatus.grid(row = 0, column = 0, sticky = "nsew")
+
+
+        self.idframe = cust.CTkFrame(self.bigframe, border_color = "Blue")
+        self.idframe.grid(row = 0, column = 4, sticky = "nsew")
+
+        self.lid = cust.CTkLabel(self.idframe, text = "ID Number", text_font = ("Times New Roman", 10), fg = "Black")
+        self.lid.grid(row = 0, column = 0, sticky = "nsew")
+
+
+        self.clientframe = cust.CTkFrame(self.bigframe, corner_radius = 0, border_color = "Blue")
+        self.clientframe.grid(row = 2, column = 0, sticky= "nswe", columnspan = 1, rowspan = 2, pady = 10, padx = 10)
 
 
         self.clientlist = tk.Listbox(self.clientframe)
-        self.clientlist.pack(expand = 1)
+        self.clientlist.grid(row = 0, column = 0, sticky= "nswe")
 
-        
-        self.bigframe2 = tk.Frame(self.master2, background = "Black")
-        self.bigframe2.pack(side = tk.RIGHT)
+        # ============ frame_right ============
 
-        self.notiframe = tk.Frame(self.bigframe2, background = "Blue")
-        self.notiframe.pack(side = tk.TOP)
+        self.frame_right.grid_rowconfigure(0, weight = 1)
+        self.frame_right.grid_rowconfigure(1, weight = 1, minsize = 10)
 
-        self.lnotif = tk.Label(self.notiframe, text = "Sleeping Notification", font = ("Times New Roman", 15), fg = "Blue")
-        self.lnotif.pack(fill = "both")
+        self.frame_right.grid_columnconfigure(0, weight = 1)
+
+        self.notiframe = cust.CTkFrame(self.frame_right, border_color = "Blue")
+        self.notiframe.grid(row = 0, column = 0, sticky = "nswe")
 
 
-        self.notiflist = tk.Listbox(self.bigframe2)
-        self.notiflist.pack(expand = 1)
+        self.lnotif = cust.CTkLabel(self.notiframe, text = "Sleeping Notification", text_font = ("Times New Roman", 10), fg = "Black")
+        self.lnotif.grid(row = 0, column = 0, sticky = "nswe")
+
+
+        self.notiflist = tk.Listbox(self.frame_right)
+        self.notiflist.grid(row = 1, column = 0, sticky = "nswe", columnspan = 1, rowspan = 2, pady = 10, padx = 10)
 
         self.makelobbycode()
 
@@ -359,27 +379,32 @@ class GUI2(cust.CTk): #admin/host UI
 
     def startstream(self):
 
-        global number
-
-        number = 0
-
+        
         try:
 
-            for x in self.clients:
+            if not self.clients:
 
-                number = number + 1
+                messagebox.showerror("No Connections!", "No clients connected to host!")
 
-                if number % 2 != 0:
+            else:
 
-                    self.ecdpower.configure(text = "On", fg_color = "Green")
+                for x in self.clients:
 
-                    x.send(("On").encode(self.FORMAT))
+                    if self.ecdpower.text == "Off":
 
-                else:
-                    
-                    self.ecdpower.configure(text = "Off", fg_color = "Red")
+                        self.ecdpower.configure(text = "On", fg_color = "Green")
 
-                    x.send(("Off").encode(self.FORMAT))
+                        x.send(("On").encode(self.FORMAT))
+
+                        print ("On sent")
+
+                    else:
+                        
+                        self.ecdpower.configure(text = "Off", fg_color = "Red")
+
+                        x.send(("Off").encode(self.FORMAT))
+
+                        print ("Off sent")
 
         except:
 
@@ -550,9 +575,13 @@ class GUI3(GUI): #initializes client GUI
 
         self.client.send(self.name.encode(self.FORMAT)) #sends client's name to server
 
+        self.vs = VideoStream(src = 0).start()
+
         self.rev = Thread(target = self.startstream2)
 
         self.rev.start()
+
+        #self.rev.join()
 
         #self.i = INITCLIENT()
 
@@ -584,51 +613,62 @@ class GUI3(GUI): #initializes client GUI
 
     def startstream2(self):
 
+        global message
+
+        #self.vs.start()
+
         try:
 
-            self.message = self.client.recv(1024).decode(self.FORMAT)
+            #while True:
 
-            vs = VideoStream(src = 0).start()
+                print("inside while")
 
-            if self.message == "On":
+                message = self.client.recv(1024).decode(self.FORMAT)
 
+                if message == "On":
 
-                print ("INSIDE FOR LOOP THE: " + self.SERVER)
+                    time.sleep(5)
 
-                EYE_AR_THRESH = 0.35
-                EYE_AR_CONSEC_FRAMES = 3
+                    self.vs.start()
 
-                # initialize the frame counters and the total number of blinks
-                COUNTER = 0
-                TOTAL = 0
+                    print ("INSIDE FOR LOOP THE: " + self.SERVER)
 
-                # initialize dlib's face detector (HOG-based) and then create
-                # the facial landmark predictor
-                print("[INFO] loading facial landmark predictor...")
-                detector = dlib.get_frontal_face_detector()
-                predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+                    EYE_AR_THRESH = 0.35
+                    EYE_AR_CONSEC_FRAMES = 3
 
-                # grab the indexes of the facial landmarks for the left and
-                # right eye, respectively
-                (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-                (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+                    # initialize the frame counters and the total number of blinks
+                    COUNTER = 0
+                    TOTAL = 0
 
-                #vs = VideoStream(src=0).start()
+                    # initialize dlib's face detector (HOG-based) and then create
+                    # the facial landmark predictor
+                    print("[INFO] loading facial landmark predictor...")
+                    detector = dlib.get_frontal_face_detector()
+                    predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-                
+                    # grab the indexes of the facial landmarks for the left and
+                    # right eye, respectively
+                    (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+                    (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
-                # vs = VideoStream(usePiCamera=True).start()
-                time.sleep(0)
+                    #vs = VideoStream(src=0).start()
 
-                # loop over frames from the video stream
-                while True:
+                    
+
+                    # vs = VideoStream(usePiCamera=True).start()
+                    #time.sleep(0)
+
+                    # loop over frames from the video stream
+                    #while True:
+
+                    print (message)
                     # if this is a file video stream, then we need to check if
                     # there any more frames left in the buffer to process
 
                     # grab the frame from the threaded video file stream, resize
                     # it, and convert it to grayscale
                     # channels)
-                    frame = vs.read()
+                    frame = self.vs.read()
                     frame = imutils.resize(frame, width=1080 )
                     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -672,9 +712,15 @@ class GUI3(GUI): #initializes client GUI
 
                             print ("Eyes closed")
 
+                            self.notiflist.insert("end", "Host is watching you!")
 
-                        # otherwise, the eye aspect ratio is not below the blink
-                        # threshold
+                            self.vs.stop()
+
+                            self.master3.after(0, self.rev)
+
+
+                            # otherwise, the eye aspect ratio is not below the blink
+                            # threshold
                         else:
                             cv2.putText(frame, "Eye: {}".format("Open"), (10, 30),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
@@ -683,24 +729,38 @@ class GUI3(GUI): #initializes client GUI
 
                             print ("Eyes open")
 
-                    # draw the total number of blinks on the frame along with
-                    # the computed eye aspect ratio for the frame
+                            self.notiflist.insert("end", "Host is watching you!")
 
-                    # show the frame
-                    cv2.imshow("Eye Close Detection Using EAR", frame)
-                    key = cv2.waitKey(1) & 0xFF
+                            #self.notiflist.delete(0, tk.END)
 
-                    # if the `q` key was pressed, break from the loop
-                    if key == ord("q"):
-                        break
+                            self.vs.stop()
 
-                # do a bit of cleanup
-                #cv2.destroyAllWindows()
-                #vs.stop()
-            else:
+                            self.master3.after(0, self.rev)
 
-                cv2.destroyAllWindows()
-                vs.stop()
+                        # draw the total number of blinks on the frame along with
+                        # the computed eye aspect ratio for the frame
+
+                        # show the frame
+                        #cv2.imshow("Eye Close Detection Using EAR", frame)
+                        #key = cv2.waitKey(1) & 0xFF
+
+                        # if the `q` key was pressed, break from the loop
+                        #if key == ord("q"):
+                            #break
+
+                    # do a bit of cleanup
+                    #cv2.destroyAllWindows()
+                    #vs.stop()
+                else:
+
+                    print ("Inside destroy")
+
+                    self.vs.stop()
+                    cv2.destroyAllWindows()
+
+                    self.master3.after(0, self.rev)
+
+                    #return
 
         except Exception as e:
 
