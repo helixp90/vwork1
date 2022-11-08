@@ -293,7 +293,7 @@ class GUI2(cust.CTk): #admin/host UI
 
 
         self.bigframe = cust.CTkFrame(self.frame_left, corner_radius = 0, border_color = "Black")
-        self.bigframe.grid(row = 4, column = 1, sticky= "nswe", columnspan = 2, rowspan = 4, pady = 20, padx = 20)
+        self.bigframe.grid(row = 4, column = 0, sticky= "nswe", columnspan = 2, rowspan = 4, pady = 20, padx = 20)
 
         self.bigframe.grid_rowconfigure(0, weight = 1)
         self.bigframe.grid_rowconfigure(1, weight = 1)
@@ -382,29 +382,35 @@ class GUI2(cust.CTk): #admin/host UI
         
         try:
 
-            if not self.clients:
+            #while True:
 
-                messagebox.showerror("No Connections!", "No clients connected to host!")
+                if not self.clients:
 
-            else:
+                    messagebox.showerror("No Connections!", "No clients connected to host!")
 
-                for x in self.clients:
+                else:
 
-                    if self.ecdpower.text == "Off":
+                    for x in self.clients:
 
-                        self.ecdpower.configure(text = "On", fg_color = "Green")
+                        if self.ecdpower.text == "Off":
 
-                        x.send(("On").encode(self.FORMAT))
+                            self.ecdpower.configure(text = "On", fg_color = "Green")
 
-                        print ("On sent")
+                            x.send(("On").encode(self.FORMAT))
 
-                    else:
-                        
-                        self.ecdpower.configure(text = "Off", fg_color = "Red")
+                            print ("On sent")
 
-                        x.send(("Off").encode(self.FORMAT))
+                            self.message = self.conn.recv(1024).decode(self.FORMAT)
 
-                        print ("Off sent")
+                            self.notiflist.insert("end", self.message)
+
+                        else:
+                            
+                            self.ecdpower.configure(text = "Off", fg_color = "Red")
+
+                            x.send(("Off").encode(self.FORMAT))
+
+                            print ("Off sent")
 
         except:
 
@@ -438,6 +444,12 @@ class GUI2(cust.CTk): #admin/host UI
 
                     #self.names.append(self.name)
                     self.clients.append(self.conn)
+
+                    #if "sleep" in self.name or "awake" in self.name:
+
+                        #self.notiflist.insert("end", self.name)
+
+                    #else:
 
                     self.clientlist.insert("end", self.name) #append client names to listbox
 
@@ -512,7 +524,7 @@ class GUI2(cust.CTk): #admin/host UI
 
         messagebox.showinfo("New Lobby Code!", "Your lobby code is: " + self.msg)
 
-        self.lnumber.config(text = self.msg) 
+        self.lnumber.configure(text = self.msg) 
 
 
 class GUI3(GUI): #initializes client GUI
@@ -627,7 +639,7 @@ class GUI3(GUI): #initializes client GUI
 
                 if message == "On":
 
-                    time.sleep(5)
+                    time.sleep(3)
 
                     self.vs.start()
 
@@ -714,9 +726,11 @@ class GUI3(GUI): #initializes client GUI
 
                             self.notiflist.insert("end", "Host is watching you!")
 
+                            self.client.send((self.name + " is sleeping!!").encode(self.FORMAT))
+
                             self.vs.stop()
 
-                            self.master3.after(0, self.rev)
+                            self.master3.after(1000, self.startstream2)
 
 
                             # otherwise, the eye aspect ratio is not below the blink
@@ -729,13 +743,15 @@ class GUI3(GUI): #initializes client GUI
 
                             print ("Eyes open")
 
-                            self.notiflist.insert("end", "Host is watching you!")
+                            self.notiflist.insert("end", "Thank you for keeping attention")
+
+                            self.client.send((self.name + " is awake!!").encode(self.FORMAT))
 
                             #self.notiflist.delete(0, tk.END)
 
                             self.vs.stop()
 
-                            self.master3.after(0, self.rev)
+                            self.master3.after(1000, self.startstream2)
 
                         # draw the total number of blinks on the frame along with
                         # the computed eye aspect ratio for the frame
@@ -758,7 +774,7 @@ class GUI3(GUI): #initializes client GUI
                     self.vs.stop()
                     cv2.destroyAllWindows()
 
-                    self.master3.after(0, self.rev)
+                    self.master3.after(1000, self.startstream2)
 
                     #return
 
