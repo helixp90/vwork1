@@ -50,6 +50,8 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
             self.grid_rowconfigure(2, weight = 1)
             #self.grid_rowconfigure(0, weight = 1)
 
+            self.protocol("WM_DELETE_WINDOW", exit)
+
 
             self.windowtitle = cust.CTkLabel(self, text = "Sleep Detection Monitoring Software", text_font = ("Times New Roman", 15), fg = "Black")
             self.windowtitle.grid(row = 0, column = 0, sticky = "nswe")
@@ -234,9 +236,12 @@ class GUI2(cust.CTk): #admin/host UI
 
         
         self.master2.title("Admin/Host Lobby")
-        self.master2.geometry(f"{400}x{400}")
+        self.master2.geometry(f"{906}x{400}")
 
-        #self.master2.resizable(False, False)
+
+        self.protocol("WM_DELETE_WINDOW", self.leavewindow)
+
+        
 
         self.master2.grid_rowconfigure(0, weight = 1)
 
@@ -364,6 +369,8 @@ class GUI2(cust.CTk): #admin/host UI
         
         #self.process = Process(target = self.s.startChat)
 
+        self.master2.resizable(False, False)
+
         self.thread = Thread(target = self.startChat)
 
         print ("After Thread INITIALIZATION")
@@ -382,6 +389,8 @@ class GUI2(cust.CTk): #admin/host UI
         
         try:
 
+                print (str(self.master2.winfo_width()) + " x " + str(self.master2.winfo_height()))
+
             #while True:
 
                 if not self.clients:
@@ -399,6 +408,8 @@ class GUI2(cust.CTk): #admin/host UI
                             x.send(("On").encode(self.FORMAT))
 
                             print ("On sent")
+
+                            
 
                             self.message = self.conn.recv(1024).decode(self.FORMAT)
 
@@ -527,50 +538,88 @@ class GUI2(cust.CTk): #admin/host UI
         self.lnumber.configure(text = self.msg) 
 
 
-class GUI3(GUI): #initializes client GUI
+class GUI3(cust.CTk): #initializes client GUI
 
     def __init__(self):
 
+        super().__init__()
+
        
-        self.master3 = tk.Toplevel()
+        self.master3 = cust.CTkToplevel()
 
         self.master3.title("Joined Lobby")
-        self.master3.geometry("")
+        self.master3.geometry(f"{906}x{400}")
 
-        self.leave = tk.Button(self.master3, text = "Leave", bg = "Red", fg = "White", command = lambda: self.leavewindow())
-        self.leave.pack(anchor = tk.NW, side = tk.TOP)
+        self.protocol("WM_DELETE_WINDOW", self.leavewindow)
 
+        self.master3.grid_rowconfigure(0, weight = 1)
 
-        self.lnameframe = tk.Frame(self.master3, background = "Black")
-        self.lnameframe.pack(side = tk.TOP)
-
-        self.lname = tk.Label(self.lnameframe, text = "+", font = ("Times New Roman", 15), fg = "Black")
-        self.lname.pack(fill = "both")
+        self.master3.grid_columnconfigure(0, weight = 1)
+        self.master3.grid_columnconfigure(1, weight = 1)
 
 
-        self.ecdlabel = tk.Label(self.master3, text = "Sleeping Detection Status", font = ("Times New Roman", 15), fg = "Black")
-        self.ecdlabel.pack(anchor = tk.CENTER)
+        self.frame_left = cust.CTkFrame(self.master3, corner_radius = 0, bg_color = "White")
+        self.frame_left.grid(row = 0, column = 0, sticky = "nswe", padx = 20, pady = 20)
+
+        self.frame_right = cust.CTkFrame(self.master3, corner_radius = 0, width = 180)
+        self.frame_right.grid(row = 0, column = 1, sticky= "nswe")
+
+        # ============ frame_left ============
 
 
-        self.bigframe = tk.Frame(self.master3, background = "Black")
-        self.bigframe.pack(anchor = tk.CENTER)
+        self.frame_left.grid_rowconfigure(0, weight = 1)
+        self.frame_left.grid_rowconfigure(1, weight = 1)
+        self.frame_left.grid_rowconfigure(2, weight = 1)
+        self.frame_left.grid_rowconfigure(3, weight = 1, minsize = 50)
 
-        self.lname = tk.Label(self.bigframe, text = "Watching you", font = ("Times New Roman", 15), fg = "Blue")
-        self.lname.pack(fill = "both")
-
-
-        self.bigframe2 = tk.Frame(self.master3, background = "Black")
-        self.bigframe2.pack(side = tk.RIGHT)
-
-        self.notiframe = tk.Frame(self.bigframe2, background = "Blue")
-        self.notiframe.pack(side = tk.TOP)
-
-        self.lnotif = tk.Label(self.notiframe, text = "Sleeping Notification", font = ("Times New Roman", 15), fg = "Blue")
-        self.lnotif.pack(fill = "both")
+        self.frame_left.grid_columnconfigure(0, weight = 1)
+        self.frame_left.grid_columnconfigure(1, weight = 1)
+        self.frame_left.grid_columnconfigure(2, weight = 1)
 
 
-        self.notiflist = tk.Listbox(self.bigframe2)
-        self.notiflist.pack(expand = 1)
+
+        self.leave = cust.CTkButton(self.frame_left, text = "Leave", fg_color = "Red", text_color = "White", hover_color = "Maroon", command = lambda: self.leavewindow())
+        self.leave.grid(row = 0, column = 0, sticky = "n")
+
+        self.ecdlabel = cust.CTkLabel(self.frame_left, text = "Sleeping Detection Status", text_font = ("Times New Roman", 15), fg = "Black")
+        self.ecdlabel.grid(row = 0, column = 2, sticky = "nswe")
+
+
+        self.lnameframe = cust.CTkFrame(self.frame_left, corner_radius = 0, border_color = "Black", bg_color = "White")
+        self.lnameframe.grid(row = 1, column = 1, sticky = "nswe")
+
+        self.lname = cust.CTkLabel(self.lnameframe, text = "+", text_font = ("Times New Roman", 15), fg = "Black")
+        self.lname.grid(row = 0, column = 0, sticky = "nswe")
+
+
+        
+
+
+        self.bigframe = cust.CTkFrame(self.frame_left, border_color = "Black", corner_radius = 0)
+        self.bigframe.grid(row = 3, column = 0, sticky = "nswe", padx = 50, pady = 50)
+
+        self.lname = cust.CTkLabel(self.bigframe, text = "Watching you", text_font = ("Times New Roman", 15), fg = "Blue")
+        self.lname.grid(row = 0, column = 0, sticky = "nswe")
+
+
+        self.frame_right.grid_rowconfigure(0, weight = 1)
+        self.frame_right.grid_rowconfigure(1, weight = 1, minsize = 10)
+
+        self.frame_right.grid_columnconfigure(0, weight = 1)
+
+        self.notiframe = cust.CTkFrame(self.frame_right, border_color = "Black")
+        self.notiframe.grid(row = 0, column = 0, sticky = "nswe")
+
+        self.lnotif = cust.CTkLabel(self.notiframe, text = "Sleeping Notification", text_font = ("Times New Roman", 15), fg = "Blue")
+        self.lnotif.grid(row = 0, column = 0, sticky = "nswe")
+
+
+        #self.notiframe2 = cust.CTkFrame(self.frame_right, border_color = "Blue")
+        #self.notiframe2.grid(row = 1, column = 0, sticky = "nswe")
+
+
+        self.notiflist = tk.Listbox(self.frame_right)
+        self.notiflist.grid(row = 1, column = 0, sticky = "nswe")
 
         self.PORT = 5000
         
@@ -772,7 +821,7 @@ class GUI3(GUI): #initializes client GUI
                     print ("Inside destroy")
 
                     self.vs.stop()
-                    cv2.destroyAllWindows()
+                    #cv2.destroyAllWindows()
 
                     self.master3.after(1000, self.startstream2)
 
