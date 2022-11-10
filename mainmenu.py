@@ -50,8 +50,6 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
             self.grid_rowconfigure(2, weight = 1)
             #self.grid_rowconfigure(0, weight = 1)
 
-            self.protocol("WM_DELETE_WINDOW", exit)
-
 
             self.windowtitle = cust.CTkLabel(self, text = "Sleep Detection Monitoring Software", text_font = ("Times New Roman", 15), fg = "Black")
             self.windowtitle.grid(row = 0, column = 0, sticky = "nswe")
@@ -623,7 +621,7 @@ class GUI3(cust.CTk): #initializes client GUI
 
         self.PORT = 5000
         
-        self.SERVER = "192.168.0.19" #exact server address; may need to be changed depending on the computer
+        self.SERVER = "" #exact server address; may need to be changed depending on the computer
         self.ADDRESS = (self.SERVER, self.PORT)
         self.FORMAT = "utf-8"
 
