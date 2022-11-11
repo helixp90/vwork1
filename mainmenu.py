@@ -1,30 +1,38 @@
-import multiprocessing
 import tkinter as tk
-from turtle import bgcolor
-import sys
-import subprocess
+
+
 import random
 import string
 import socket
-import threading
+
 from tkinter import messagebox
-from tkinter import ttk
+
 from threading import Thread
-from threading import Event
-from multiprocessing import Process
+
 import traceback
 import customtkinter as cust
 
 from scipy.spatial import distance as dist
-from imutils.video import FileVideoStream
+
 from imutils.video import VideoStream
 from imutils import face_utils
-import numpy as np
-import argparse
+
 import imutils
 import time
 import dlib
 import cv2
+
+#import sys
+#import multiprocessing
+#import threading
+#from turtle import bgcolor
+#import subprocess
+#from tkinter import ttk
+#from threading import Event
+#from multiprocessing import Process
+#from imutils.video import FileVideoStream
+#import numpy as np
+#import argparse
 
 #lobbycode = ''
 
@@ -44,6 +52,8 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
             self.geometry(f"{300}x{200}")
 
             self.resizable(False, False)
+
+            self.protocol("WM_DELETE_WINDOW", exit)
 
             self.grid_rowconfigure(0, weight = 1)
             self.grid_rowconfigure(1, weight = 1)
@@ -189,13 +199,6 @@ class GUI(cust.CTk):  #initializes root/mainmenu window
 
                     print (e)
 
-    #else:
-
-        def getvalueofclobbyname(self):
-
-            return self.enterlname.get()
-
-
 class GUI2(cust.CTk): #admin/host UI
 
     def __init__(self):
@@ -237,7 +240,7 @@ class GUI2(cust.CTk): #admin/host UI
         self.master2.geometry(f"{906}x{400}")
 
 
-        self.protocol("WM_DELETE_WINDOW", self.leavewindow)
+        self.master2.protocol("WM_DELETE_WINDOW", self.leavewindow)
 
         
 
@@ -548,7 +551,7 @@ class GUI3(cust.CTk): #initializes client GUI
         self.master3.title("Joined Lobby")
         self.master3.geometry(f"{906}x{400}")
 
-        self.protocol("WM_DELETE_WINDOW", self.leavewindow)
+        self.master3.protocol("WM_DELETE_WINDOW", self.leavewindow)
 
         self.master3.grid_rowconfigure(0, weight = 1)
 
@@ -621,7 +624,7 @@ class GUI3(cust.CTk): #initializes client GUI
 
         self.PORT = 5000
         
-        self.SERVER = "" #exact server address; may need to be changed depending on the computer
+        self.SERVER = "192.168.0.19" #exact server address; may need to be changed depending on the computer
         self.ADDRESS = (self.SERVER, self.PORT)
         self.FORMAT = "utf-8"
 
